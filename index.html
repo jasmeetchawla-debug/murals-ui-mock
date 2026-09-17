@@ -98,33 +98,49 @@
   }
   svg.i{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;}
 
-  /* ================= APPRECIATION MURAL BANNER ================= */
+  /* ================= APPRECIATION MURAL BANNER — hero via motion, not size ================= */
   .mural-banner{
-    border-radius:16px; padding:12px 13px 11px; position:relative; overflow:hidden; cursor:pointer;
+    border-radius:15px; padding:11px 12px; position:relative; overflow:hidden; cursor:pointer;
     background:
-      radial-gradient(120% 140% at 0% 0%, rgba(249,115,22,.30), transparent 55%),
-      radial-gradient(120% 140% at 100% 0%, rgba(147,51,234,.30), transparent 55%),
+      radial-gradient(circle, rgba(249,115,22,.55), transparent 60%),
+      radial-gradient(circle, rgba(147,51,234,.55), transparent 60%),
+      radial-gradient(circle, rgba(236,72,153,.45), transparent 60%),
       var(--surface-2);
+    background-repeat:no-repeat;
+    background-size:180% 180%, 160% 160%, 200% 200%, auto;
+    background-position:0% 0%, 100% 0%, 50% 100%, 0 0;
+    animation:mesh-drift 8s ease-in-out infinite alternate;
     border:1px solid var(--border); margin-bottom:18px; transition:transform .2s ease;
   }
   .mural-banner:active{transform:scale(.98);}
-  .mural-top{display:flex; align-items:center; gap:6px; margin-bottom:7px;}
-  .mural-top svg.i{stroke:var(--pink); width:14px; height:14px;}
-  .mural-eyebrow{font-size:10px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--pink);}
-  .mural-title{font-family:var(--font-head); font-weight:700; font-size:14.5px; margin:0 0 2px;}
-  .mural-desc{font-size:11.5px; color:var(--text-muted); margin:0 0 9px;}
-  .mural-stack{display:flex; align-items:center; gap:-8px;}
-  .stack-notes{display:flex;}
-  .mini-note{
-    width:30px; height:30px; border-radius:9px; background:var(--surface); border:1px solid var(--border);
-    font-family:var(--font-note); font-weight:700; font-size:11px; display:flex; align-items:center; justify-content:center;
-    margin-left:-9px; box-shadow:0 3px 8px rgba(0,0,0,.15); transform:rotate(var(--r,0deg));
+  @keyframes mesh-drift{
+    0%{ background-position:0% 0%, 100% 0%, 50% 100%, 0 0; }
+    50%{ background-position:70% 50%, 20% 70%, 80% 20%, 0 0; }
+    100%{ background-position:100% 100%, 0% 100%, 20% 60%, 0 0; }
   }
-  .mini-note:first-child{margin-left:0;}
-  .mural-cta{
-    margin-left:auto; display:flex; align-items:center; gap:4px; font-size:11px; font-weight:800; color:var(--text);
+  @media (prefers-reduced-motion: reduce){ .mural-banner{animation:none;} }
+  .mural-banner::after{
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:linear-gradient(165deg, rgba(0,0,0,.2) 0%, rgba(0,0,0,.5) 100%);
   }
-  .mural-count{font-size:10.5px; color:var(--text-dim); margin-left:6px;}
+  .mural-cta-corner{
+    position:absolute; top:10px; right:10px; z-index:2; width:24px; height:24px; border-radius:50%;
+    background:rgba(255,255,255,.22); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0;
+  }
+  .mural-cta-corner svg{width:13px; height:13px;}
+  .mural-top{display:flex; align-items:center; gap:7px; margin-bottom:7px; position:relative; z-index:2; padding-right:28px;}
+  .mural-icon-badge{
+    width:23px; height:23px; border-radius:50%; background:var(--brand-gradient); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 3px 8px -2px rgba(236,72,153,.5);
+  }
+  .mural-icon-badge svg{width:12px; height:12px;}
+  .mural-eyebrow{
+    font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+  .mural-title{font-family:var(--font-head); font-weight:700; font-size:13.5px; margin:0 0 2px; line-height:1.25; position:relative; z-index:2; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.35);}
+  .mural-desc{font-size:11px; color:rgba(255,255,255,.82); line-height:1.35; margin:0; position:relative; z-index:2; text-shadow:0 1px 3px rgba(0,0,0,.3);}
 
   /* ================= FULL WALL ================= */
   .wall-view{position:relative;}
@@ -149,18 +165,19 @@
       radial-gradient(80% 55% at 100% 30%, rgba(236,72,153,.30), transparent 60%),
       var(--bg);}
   .wall-header{
-    position:relative; z-index:2; display:flex; align-items:center; gap:8px; padding:12px 14px 6px; flex-shrink:0;
+    position:relative; z-index:2; display:flex; align-items:center; gap:8px; padding:12px 16px 6px; flex-shrink:0;
   }
   .wall-header > div:not(.icon-btn){flex:1; min-width:0;}
   .wall-header h2{font-family:var(--font-head); font-size:15px; margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .wall-header .wh-sub{font-size:10.5px; color:var(--text-muted); font-weight:600;}
   .chip-row{display:flex; align-items:center; gap:7px; padding:0 16px 12px; position:relative; z-index:2; flex-shrink:0;}
+  .view[data-view="wall"][data-context="viewer"] .chip-row{display:none;}
   .chip{
     padding:7px 13px; border-radius:100px; font-size:12px; font-weight:700; border:1px solid var(--border);
     background:var(--surface-2); color:var(--text-muted); cursor:pointer;
   }
   .chip.active{background:var(--text); color:var(--bg); border-color:var(--text);}
-  .wall-scroll{position:relative; z-index:1; flex:1; overflow-y:auto; padding:0 12px 90px;}
+  .wall-scroll{position:relative; z-index:1; flex:1; overflow-y:auto; padding:0 16px 90px;}
   .masonry{column-count:2; column-gap:10px;}
   .note{
     break-inside:avoid; margin-bottom:10px; border-radius:16px; padding:13px 13px 11px;
@@ -269,7 +286,7 @@
   .send-btn:disabled{opacity:.4; cursor:not-allowed;}
 
   /* ================= CUSTOMIZE ================= */
-  .cz-scroll{padding:16px 18px calc(28px + env(safe-area-inset-bottom,0px));}
+  .cz-scroll{padding:16px 16px calc(28px + env(safe-area-inset-bottom,0px));}
   .cz-title{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
   .cz-title h2{font-family:var(--font-head); font-size:18px; margin:0;}
   .cz-block{margin-bottom:22px;}
@@ -336,17 +353,8 @@
   @media (max-width:420px){ .device{height:76vh;} }
 
   /* ==================================================================
-     Micro-interactions — ambient icon ring, like/pin reward bursts.
+     Micro-interactions — like/pin reward bursts.
   ================================================================== */
-  .mural-icon-ring{position:relative; width:18px; height:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
-  .mural-icon-ring::before{
-    content:""; position:absolute; inset:-3px; border-radius:50%; border:1.5px dashed rgba(249,115,22,.45);
-    animation:ring-spin 6s linear infinite;
-  }
-  .mural-icon-ring svg{stroke:var(--pink); width:13px; height:13px; position:relative;}
-  @keyframes ring-spin{ to{ transform:rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce){ .mural-icon-ring::before{animation:none;} }
-
   .pin-btn{ position:relative; }
   .pin-btn svg{ transition:transform .35s cubic-bezier(.34,1.8,.64,1); }
   .pin-btn.active svg{ transform:scale(1.15) rotate(-8deg); filter:drop-shadow(0 2px 3px rgba(249,115,22,.5)); }
@@ -407,14 +415,15 @@
   .avatar-sq{width:74px; height:74px; border-radius:15px; flex-shrink:0; display:block;}
   .avatar-col{display:flex; flex-direction:column; align-items:flex-start; gap:6px; flex-shrink:0;}
   .streak-pill{
-    display:flex; align-items:center; gap:4px; background:var(--surface-2); border:1px solid rgba(249,115,22,.35);
+    display:flex; align-items:center; gap:4px; width:fit-content; flex-shrink:0; box-sizing:border-box; background:var(--surface-2); border:1px solid rgba(249,115,22,.35);
     background-image:linear-gradient(90deg, rgba(249,115,22,.12), transparent);
-    padding:4px 7px 4px 6px; border-radius:13px; font-size:10.5px; font-weight:700; color:var(--text);
+    padding:5px 8px; border-radius:13px; font-size:10.5px; font-weight:700; color:var(--text);
     white-space:nowrap; position:relative; overflow:hidden; cursor:pointer;
   }
   .streak-pill.inactive{border-color:var(--border); background-image:none; color:var(--text-muted);}
   .streak-pill svg.flame{width:14px; height:14px; color:var(--orange); flex-shrink:0;}
   .streak-pill.inactive svg.flame{color:var(--text-dim);}
+  .streak-pill span{overflow:hidden; text-overflow:ellipsis; min-width:0;}
   .streak-pill svg.chevron{width:10px; height:10px; color:var(--text-dim); flex-shrink:0;}
   .streak-pill::after{
     content:""; position:absolute; inset:0; pointer-events:none;
@@ -434,10 +443,11 @@
   }
   .itrust-chip svg{width:10px; height:10px;}
   .pbio{font-size:11.5px; color:var(--text); line-height:1.4; margin:1px 0 0;
-    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
   .pbio-more{background:none; border:none; padding:1px 0 0; font-family:inherit; font-size:11px; font-weight:800; color:var(--orange); cursor:pointer;}
 
-  .pstats-row{display:flex; justify-content:center; align-items:center; padding:14px 0 0;}
+  .stats-line{display:flex; align-items:center; gap:14px; margin-top:10px;}
+  .pstats-row{display:flex; flex:1; justify-content:center; align-items:center;}
   .pstat{text-align:center; padding:0 13px;}
   .pstat b{display:block; font-family:var(--font-head); font-size:16px; font-weight:700;}
   .pstat span{display:block; font-size:10.5px; color:var(--text-muted); margin-top:1px;}
@@ -445,7 +455,7 @@
 
   .pactions{display:flex; gap:8px; padding:12px 0 0;}
   .paction-btn{
-    flex:1; height:40px; border-radius:10px; border:none; background:var(--brand-gradient);
+    flex:1; height:36px; border-radius:9px; border:none; background:var(--brand-gradient);
     color:#fff; font-family:inherit; font-weight:700; font-size:12px; cursor:pointer;
   }
   .paction-btn.secondary{
@@ -454,10 +464,26 @@
   }
   .paction-btn.secondary svg{width:14px; height:14px;}
   .icon-sq-btn{
-    width:40px; height:40px; border-radius:10px; background:var(--surface-2); border:none;
+    width:36px; height:36px; border-radius:9px; background:var(--surface-2); border:none;
     display:flex; align-items:center; justify-content:center; color:var(--text); cursor:pointer; flex-shrink:0;
   }
   .icon-sq-btn svg{width:17px; height:17px;}
+
+  /* ---- Highlights (story-style drops) ---- */
+  .highlights-row{display:flex; gap:15px; overflow-x:auto; padding:14px 16px 2px; scrollbar-width:none;}
+  .highlights-row::-webkit-scrollbar{display:none;}
+  .highlight-item{display:flex; flex-direction:column; align-items:center; gap:5px; flex-shrink:0; width:58px;}
+  .highlight-ring{width:58px; height:82px; border-radius:16px; padding:2.5px; background:var(--brand-gradient); flex-shrink:0; box-sizing:border-box;}
+  .highlight-thumb{
+    width:100%; height:100%; border-radius:13px; border:2px solid var(--bg); box-sizing:border-box;
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+  }
+  .highlight-add{
+    width:58px; height:82px; border-radius:16px; border:1.5px dashed var(--border); background:var(--surface-2);
+    display:flex; align-items:center; justify-content:center; color:var(--text-dim); flex-shrink:0; box-sizing:border-box;
+  }
+  .highlight-add svg{width:22px; height:22px;}
+  .highlight-item span{font-size:10.5px; color:var(--text-muted); font-weight:600; max-width:58px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 
   /* ---- AI Profile Summary — compact chip FAB: whole pill glows, not just the icon ---- */
   .ai-fab{
@@ -488,7 +514,7 @@
   .sheet-scrim.show{opacity:1; pointer-events:auto;}
   .ai-sheet{
     position:absolute; left:0; right:0; bottom:0; z-index:31; background:var(--bg); border:1px solid var(--border);
-    border-radius:20px 20px 0 0; padding:18px 18px calc(20px + env(safe-area-inset-bottom,0px));
+    border-radius:20px 20px 0 0; padding:18px 16px calc(20px + env(safe-area-inset-bottom,0px));
     max-height:64%; display:flex; flex-direction:column; transform:translateY(102%);
     transition:transform .32s cubic-bezier(.2,.9,.25,1); box-shadow:0 -12px 30px rgba(0,0,0,.35);
   }
@@ -648,11 +674,6 @@
             <div class="phead-row">
               <div class="avatar-col">
                 <img class="avatar-sq" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 90'%3E%3Crect width='90' height='90' rx='18' fill='%23F97316'/%3E%3Ctext x='45' y='58' font-family='Arial,sans-serif' font-size='32' font-weight='700' fill='white' text-anchor='middle'%3EJR%3C/text%3E%3C/svg%3E" alt="Juno Reyes">
-                <div class="streak-pill">
-                  <svg class="flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s5 5.5 5 10a5 5 0 0 1-10 0c0-1.4.6-2.6 1.3-3.6C9 10 10 10.7 10 12a2 2 0 0 0 4 0c0-2.4-2-4-2-7z"/></svg>
-                  <span>34-Day Streak</span>
-                  <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
-                </div>
               </div>
               <div class="pinfo">
                 <div class="pname-row">
@@ -660,40 +681,67 @@
                   <svg class="pbadge" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8"><path d="M12 2l2.4 1.4 2.8-.2 1.2 2.5 2.5 1.2-.2 2.8L22 12l-1.4 2.4.2 2.8-2.5 1.2-1.2 2.5-2.8-.2L12 22l-2.4-1.4-2.8.2-1.2-2.5-2.5-1.2.2-2.8L2 12l1.4-2.4-.2-2.8 2.5-1.2 1.2-2.5 2.8.2z"/><path d="M9 12l2 2 4-4"/></svg>
                   <span class="itrust-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 3v6c0 5-3 8.5-7 11-4-2.5-7-6-7-11V5z"/></svg>91</span>
                 </div>
-                <p class="pbio" id="bioText">Dance &amp; lifestyle creator. Coffee-fueled choreo drops every Friday. Based in Austin, always taking requests 💫</p>
-                <button class="pbio-more" id="bioToggle">Show more</button>
+                <p class="pbio">Dance &amp; lifestyle creator. Coffee-fueled choreo drops every Friday. Based in Austin, always taking requests 💫</p>
+                <button class="pbio-more">Show more</button>
               </div>
             </div>
 
-            <div class="pstats-row">
-              <div class="pstat"><b>184</b><span>Posts</span></div>
-              <div class="pstat-div"></div>
-              <div class="pstat"><b>52.1k</b><span>Friends</span></div>
-              <div class="pstat-div"></div>
-              <div class="pstat"><b>96.4k</b><span>Likes</span></div>
+            <div class="stats-line">
+              <div class="streak-pill">
+                <svg class="flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s5 5.5 5 10a5 5 0 0 1-10 0c0-1.4.6-2.6 1.3-3.6C9 10 10 10.7 10 12a2 2 0 0 0 4 0c0-2.4-2-4-2-7z"/></svg>
+                <span>34-Day Streak</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
+              </div>
+
+              <div class="pstats-row">
+                <div class="pstat"><b>52.1k</b><span>Followers</span></div>
+                <div class="pstat-div"></div>
+                <div class="pstat"><b>3.8k</b><span>Friends</span></div>
+                <div class="pstat-div"></div>
+                <div class="pstat"><b>96.4k</b><span>Likes</span></div>
+              </div>
             </div>
 
-            <div class="mural-banner" data-open="wall" style="margin-top:18px;">
+            <div class="mural-banner" id="ownMuralBanner" style="margin-top:18px;">
+              <div class="mural-cta-corner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
+              </div>
               <div class="mural-top">
-                <div class="mural-icon-ring">
-                  <svg class="i" viewBox="0 0 24 24"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg>
+                <div class="mural-icon-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg>
                 </div>
                 <span class="mural-eyebrow">Appreciation Wall</span>
                 <span class="mural-new">NEW</span>
               </div>
               <h3 class="mural-title">See what people love about Juno</h3>
-              <p class="mural-desc"><span class="js-note-count">128</span> supportive notes from friends &amp; fans</p>
-              <div class="mural-stack">
-                <div class="stack-notes">
-                  <div class="mini-note" style="--r:-8deg; background:#FBEAF0;">💗</div>
-                  <div class="mini-note" style="--r:5deg; background:#FFF1DE;">✨</div>
-                  <div class="mini-note" style="--r:-3deg; background:#EFE6FB;">🌟</div>
-                </div>
-                <span class="mural-count">+125 more</span>
-                <span class="mural-cta">Open
-                  <svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M9 6l6 6-6 6"/></svg>
-                </span>
-              </div>
+              <p class="mural-desc"><span class="js-note-count">128</span> heartfelt notes from friends &amp; fans are waiting for you to read.</p>
+            </div>
+          </div>
+
+          <div class="highlights-row">
+            <div class="highlight-item">
+              <div class="highlight-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div>
+              <span>New</span>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#FDE6D8;">✈️</div></div>
+              <span>Travel</span>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#E3F2E1;">💃</div></div>
+              <span>Dance Tips</span>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#EFE6FB;">🎬</div></div>
+              <span>BTS</span>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#FDF0D5;">💬</div></div>
+              <span>Q&amp;A</span>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#FBEAF0;">🎉</div></div>
+              <span>2024 Recap</span>
             </div>
           </div>
 
@@ -751,11 +799,6 @@
             <div class="phead-row">
               <div class="avatar-col">
                 <img class="avatar-sq" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 90'%3E%3Crect width='90' height='90' rx='18' fill='%23F97316'/%3E%3Ctext x='45' y='58' font-family='Arial,sans-serif' font-size='32' font-weight='700' fill='white' text-anchor='middle'%3EJR%3C/text%3E%3C/svg%3E" alt="Juno Reyes">
-                <div class="streak-pill">
-                  <svg class="flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s5 5.5 5 10a5 5 0 0 1-10 0c0-1.4.6-2.6 1.3-3.6C9 10 10 10.7 10 12a2 2 0 0 0 4 0c0-2.4-2-4-2-7z"/></svg>
-                  <span>34-Day Streak</span>
-                  <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
-                </div>
               </div>
               <div class="pinfo">
                 <div class="pname-row">
@@ -764,15 +807,24 @@
                   <span class="itrust-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 3v6c0 5-3 8.5-7 11-4-2.5-7-6-7-11V5z"/></svg>91</span>
                 </div>
                 <p class="pbio">Dance &amp; lifestyle creator. Coffee-fueled choreo drops every Friday. Based in Austin, always taking requests 💫</p>
+                <button class="pbio-more">Show more</button>
               </div>
             </div>
 
-            <div class="pstats-row">
-              <div class="pstat"><b>184</b><span>Posts</span></div>
-              <div class="pstat-div"></div>
-              <div class="pstat"><b>52.1k</b><span>Friends</span></div>
-              <div class="pstat-div"></div>
-              <div class="pstat"><b>96.4k</b><span>Likes</span></div>
+            <div class="stats-line">
+              <div class="streak-pill">
+                <svg class="flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s5 5.5 5 10a5 5 0 0 1-10 0c0-1.4.6-2.6 1.3-3.6C9 10 10 10.7 10 12a2 2 0 0 0 4 0c0-2.4-2-4-2-7z"/></svg>
+                <span>34-Day Streak</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
+              </div>
+
+              <div class="pstats-row">
+                <div class="pstat"><b>52.1k</b><span>Followers</span></div>
+                <div class="pstat-div"></div>
+                <div class="pstat"><b>3.8k</b><span>Friends</span></div>
+                <div class="pstat-div"></div>
+                <div class="pstat"><b>96.4k</b><span>Likes</span></div>
+              </div>
             </div>
 
             <div class="pactions">
@@ -781,26 +833,41 @@
               <button class="icon-sq-btn" title="Share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="2.7"/><circle cx="6" cy="12" r="2.7"/><circle cx="18" cy="19" r="2.7"/><path d="M8.4 10.7l7.2-3.9M8.4 13.3l7.2 3.9"/></svg></button>
             </div>
 
-            <div class="mural-banner" data-open="wall" style="margin-top:16px;">
+            <div class="mural-banner" id="viewerMuralBanner" style="margin-top:16px;">
+              <div class="mural-cta-corner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
+              </div>
               <div class="mural-top">
-                <div class="mural-icon-ring">
-                  <svg class="i" viewBox="0 0 24 24"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg>
+                <div class="mural-icon-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg>
                 </div>
                 <span class="mural-eyebrow">Appreciation Wall</span>
               </div>
               <h3 class="mural-title">Leave Juno a kind note</h3>
-              <p class="mural-desc">128 supportive notes from friends &amp; fans</p>
-              <div class="mural-stack">
-                <div class="stack-notes">
-                  <div class="mini-note" style="--r:-8deg; background:#FBEAF0;">💗</div>
-                  <div class="mini-note" style="--r:5deg; background:#FFF1DE;">✨</div>
-                  <div class="mini-note" style="--r:-3deg; background:#EFE6FB;">🌟</div>
-                </div>
-                <span class="mural-count">+125 more</span>
-                <span class="mural-cta">Open
-                  <svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M9 6l6 6-6 6"/></svg>
-                </span>
-              </div>
+              <p class="mural-desc">128 heartfelt notes from friends &amp; fans already fill her wall — add yours.</p>
+            </div>
+          </div>
+
+          <div class="highlights-row">
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#FDE6D8;">✈️</div></div>
+              <span>Travel</span>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#E3F2E1;">💃</div></div>
+              <span>Dance Tips</span>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#EFE6FB;">🎬</div></div>
+              <span>BTS</span>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#FDF0D5;">💬</div></div>
+              <span>Q&amp;A</span>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-ring"><div class="highlight-thumb" style="background:#FBEAF0;">🎉</div></div>
+              <span>2024 Recap</span>
             </div>
           </div>
 
@@ -882,7 +949,7 @@
           </div>
           <div class="icon-btn" data-open="customize"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4.6a7.7 7.7 0 0 0-1.7-1l-.4-2.5H9.1l-.4 2.5a7.7 7.7 0 0 0-1.7 1l-2.4-.6-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-.6c.5.4 1.1.75 1.7 1l.4 2.5h5.8l.4-2.5c.6-.25 1.2-.6 1.7-1l2.4.6 2-3.4z"/></svg></div>
         </div>
-        <div class="chip-row" style="padding:0 14px 10px;">
+        <div class="chip-row" style="padding:0 16px 10px;">
           <div class="chip active" data-filter="all">All 128</div>
           <div class="chip" data-filter="pinned">Pinned 6</div>
         </div>
@@ -1158,12 +1225,13 @@
     followBtn.textContent = following ? 'Following' : 'Follow';
   });
 
-  var bioText = document.getElementById('bioText');
-  var bioToggle = document.getElementById('bioToggle');
-  bioToggle.addEventListener('click', function(){
-    var expanded = bioText.style.webkitLineClamp === 'unset';
-    bioText.style.webkitLineClamp = expanded ? '3' : 'unset';
-    bioToggle.textContent = expanded ? 'Show more' : 'Show less';
+  document.querySelectorAll('.pbio-more').forEach(function(btn){
+    var bio = btn.previousElementSibling;
+    btn.addEventListener('click', function(){
+      var expanded = bio.style.webkitLineClamp === 'unset';
+      bio.style.webkitLineClamp = expanded ? '2' : 'unset';
+      btn.textContent = expanded ? 'Show more' : 'Show less';
+    });
   });
 
   // Pin toggle on wall notes, with a small reward burst
@@ -1198,6 +1266,24 @@
     });
   }
   wireNoteButtons(document);
+
+  // Opening the wall from a visitor's profile: no All/Pinned filter, pinned notes lead
+  var wallView = document.querySelector('.view[data-view="wall"]');
+  var wallMasonry = document.getElementById('masonry');
+  var wallOriginalOrder = Array.prototype.slice.call(wallMasonry.children);
+  function openWall(context){
+    wallView.dataset.context = context;
+    var notes = wallOriginalOrder.slice();
+    if (context === 'viewer') {
+      notes.sort(function(a, b){
+        return (b.classList.contains('pinned') ? 1 : 0) - (a.classList.contains('pinned') ? 1 : 0);
+      });
+    }
+    notes.forEach(function(n){ wallMasonry.appendChild(n); });
+    activate('wall');
+  }
+  document.getElementById('ownMuralBanner').addEventListener('click', function(){ openWall('own'); });
+  document.getElementById('viewerMuralBanner').addEventListener('click', function(){ openWall('viewer'); });
 
   // Wall filter chips
   document.querySelectorAll('.chip').forEach(function(chip){
