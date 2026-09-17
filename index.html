@@ -174,23 +174,23 @@
   .masonry .note:nth-child(3){animation-delay:.14s;} .masonry .note:nth-child(4){animation-delay:.2s;}
   .masonry .note:nth-child(5){animation-delay:.26s;} .masonry .note:nth-child(6){animation-delay:.32s;}
   @media (prefers-reduced-motion: reduce){ .masonry .note{animation:none;} }
-  .note.pinned{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber), var(--card-shadow);}
-  .note .pin-ribbon{position:absolute; top:-6px; right:10px; color:var(--amber);}
-  .note .pin-ribbon svg{width:18px; height:18px; fill:var(--amber); stroke:var(--amber);}
+  .note.pinned{border-color:var(--orange); box-shadow:0 0 0 1px var(--orange), var(--card-shadow);}
+  @keyframes pin-pulse{
+    0%{ box-shadow:0 0 0 0 rgba(249,115,22,.55), var(--card-shadow); }
+    70%{ box-shadow:0 0 0 9px rgba(249,115,22,0), var(--card-shadow); }
+    100%{ box-shadow:0 0 0 0 rgba(249,115,22,0), var(--card-shadow); }
+  }
+  .note.pin-flash{ animation:pin-pulse .6s ease-out; }
+  @media (prefers-reduced-motion: reduce){ .note.pin-flash{animation:none;} }
   .note-head{display:flex; align-items:center; gap:7px; margin-bottom:7px;}
   .note-av{width:24px; height:24px; border-radius:50%; flex-shrink:0;}
   .note-user{font-size:11.5px; font-weight:800;}
   .note-user span{color:var(--text-dim); font-weight:600;}
   .note-msg{font-family:var(--font-note); font-weight:600; line-height:1.22; color:var(--text); margin:0 0 8px;}
   .note-foot{display:flex; align-items:center; gap:12px;}
-  .like-btn{display:flex; align-items:center; gap:4px; font-size:11.5px; font-weight:700; color:var(--text-dim); cursor:pointer; background:none; border:none; font-family:inherit; padding:0;}
-  .like-btn svg{width:15px; height:15px;}
-  .like-btn.liked{color:var(--pink);}
-  .like-btn.liked svg{fill:var(--pink); stroke:var(--pink);}
   .pin-btn{margin-left:auto; color:var(--text-dim); cursor:pointer; background:none; border:none; display:flex;}
-  .pin-btn svg{width:15px; height:15px;}
-  .pin-btn.active{color:var(--amber);}
-  .pin-btn.active svg{fill:var(--amber); stroke:var(--amber);}
+  .pin-btn svg{width:18px; height:18px;}
+  .pin-btn.active{color:var(--orange);}
 
   .fab{
     position:absolute; z-index:5; left:16px; right:16px; bottom:16px; height:50px; border-radius:25px;
@@ -228,17 +228,10 @@
     border-radius:18px; background:var(--surface-2); border:1px solid var(--border);
     padding:16px; display:flex; flex-direction:column; position:relative; overflow:hidden;
   }
-  .compose-area::before{
-    content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--note-accent, var(--pink));
-    transition:background .25s ease;
-  }
   .compose-top-row{display:flex; align-items:center; gap:8px; margin-bottom:12px;}
   .compose-as{display:flex; align-items:center; gap:7px; flex:1; min-width:0;}
   .compose-as img{width:22px; height:22px; border-radius:50%; flex-shrink:0;}
   .compose-as span{font-size:11.5px; color:var(--text-muted); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .color-picker{display:flex; gap:6px; flex-shrink:0;}
-  .color-dot{width:18px; height:18px; border-radius:50%; cursor:pointer; border:2px solid transparent; padding:0;}
-  .color-dot.selected{border-color:var(--text);}
 
   textarea.compose-input{
     flex:1; resize:none; border:none; background:transparent; color:var(--text); font-family:var(--font-note);
@@ -307,9 +300,6 @@
   .switch.on{background:var(--green);}
   .switch::after{content:""; position:absolute; width:19px; height:19px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.3);}
   .switch.on::after{transform:translateX(17px);}
-  .anim-row{display:flex; gap:8px;}
-  .anim-chip{flex:1; padding:11px 6px; border-radius:12px; background:var(--surface-2); border:1px solid var(--border); text-align:center; font-size:11.5px; font-weight:700; color:var(--text-muted); cursor:pointer;}
-  .anim-chip.active{background:var(--text); color:var(--bg); border-color:var(--text);}
 
   /* ================= MODERATION ================= */
   .mod-scroll{padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px));}
@@ -357,10 +347,9 @@
   @keyframes ring-spin{ to{ transform:rotate(360deg); } }
   @media (prefers-reduced-motion: reduce){ .mural-icon-ring::before{animation:none;} }
 
-  .like-btn, .pin-btn{ position:relative; }
-  .like-btn svg, .pin-btn svg{ transition:transform .35s cubic-bezier(.34,1.8,.64,1); }
-  .like-btn.liked svg{ transform:scale(1.15); }
-  .pin-btn.active svg{ transform:scale(1.15) rotate(-8deg); }
+  .pin-btn{ position:relative; }
+  .pin-btn svg{ transition:transform .35s cubic-bezier(.34,1.8,.64,1); }
+  .pin-btn.active svg{ transform:scale(1.15) rotate(-8deg); filter:drop-shadow(0 2px 3px rgba(249,115,22,.5)); }
   .burst{
     position:absolute; top:50%; left:8px; width:4px; height:4px; border-radius:50%; pointer-events:none;
     transform:translate(-50%,-50%); animation:burst-out .55s ease-out forwards;
@@ -607,6 +596,19 @@
   }
   .rnav-wrap{position:relative;}
 </style>
+
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <!-- Phosphor Icons "push-pin" (regular + fill), used as-is for a properly drawn pin silhouette -->
+    <symbol id="icon-pin-outline" viewBox="0 0 256 256">
+      <path d="M229.66,98.34a8,8,0,0,0,0-11.31L169,26.34a8,8,0,0,0-11.31,0L100.39,83.8S72.64,69.93,43,93.85a8,8,0,0,0-.65,11.91l107.9,107.89a8,8,0,0,0,12-.83c8.39-11.16,21.57-34.09,10.11-57Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+      <line x1="96.29" y1="159.71" x2="48" y2="208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+    </symbol>
+    <symbol id="icon-pin-fill" viewBox="0 0 256 256">
+      <path d="M235.33,104l-53.47,53.65c4.56,12.67,6.45,33.89-13.19,60A15.93,15.93,0,0,1,157,224c-.38,0-.75,0-1.13,0a16,16,0,0,1-11.32-4.69L96.29,171,53.66,213.66a8,8,0,0,1-11.32-11.32L85,159.71l-48.3-48.3A16,16,0,0,1,38,87.63c25.42-20.51,49.75-16.48,60.4-13.14L152,20.7a16,16,0,0,1,22.63,0l60.69,60.68A16,16,0,0,1,235.33,104Z" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
 
 <div class="intro">
   <p class="eyebrow">iFollow &middot; Profile Experience</p>
@@ -890,7 +892,7 @@
           <div class="icon-btn" data-open="profile"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
           <div>
             <h2>Juno's Appreciation Wall</h2>
-            <span class="wh-sub">128 notes &middot; arranged by AI</span>
+            <span class="wh-sub">128 notes</span>
           </div>
           <div class="icon-btn" data-open="customize"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4.6a7.7 7.7 0 0 0-1.7-1l-.4-2.5H9.1l-.4 2.5a7.7 7.7 0 0 0-1.7 1l-2.4-.6-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-.6c.5.4 1.1.75 1.7 1l.4 2.5h5.8l.4-2.5c.6-.25 1.2-.6 1.7-1l2.4.6 2-3.4z"/></svg></div>
         </div>
@@ -901,36 +903,34 @@
         <div class="wall-scroll">
           <div class="masonry" id="masonry">
             <div class="note pinned" data-tag="pinned">
-              <div class="pin-ribbon"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z" stroke-width="1"/></svg></div>
               <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%23EC4899'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3EMC%3C/text%3E%3C/svg%3E" alt="@marcocodes"><span class="note-user">@marcocodes <span>&middot; 2d</span></span></div>
               <p class="note-msg">You always show up for people, even on your hardest days. That's rare. Never change 💛</p>
-              <div class="note-foot"><button class="like-btn liked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 41</button><button class="pin-btn active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+              <div class="note-foot"><button class="pin-btn active"><svg viewBox="0 0 256 256"><use href="#icon-pin-fill"/></svg></button></div>
             </div>
             <div class="note" data-tag="all">
               <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%239333EA'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3ELK%3C/text%3E%3C/svg%3E" alt="@lilah.k"><span class="note-user">@lilah.k <span>&middot; 5h</span></span></div>
               <p class="note-msg">Your live tonight literally turned my whole week around. Thank you for existing ✨</p>
-              <div class="note-foot"><button class="like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 12</button><button class="pin-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+              <div class="note-foot"><button class="pin-btn"><svg viewBox="0 0 256 256"><use href="#icon-pin-outline"/></svg></button></div>
             </div>
             <div class="note pinned" data-tag="pinned">
-              <div class="pin-ribbon"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z" stroke-width="1"/></svg></div>
               <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%231D9BF0'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3EDP%3C/text%3E%3C/svg%3E" alt="@dev_priya"><span class="note-user">@dev_priya <span>&middot; 1w</span></span></div>
               <p class="note-msg">Watching you go from 0 to booked-out in a year has been so inspiring. Proud of you!</p>
-              <div class="note-foot"><button class="like-btn liked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 67</button><button class="pin-btn active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+              <div class="note-foot"><button class="pin-btn active"><svg viewBox="0 0 256 256"><use href="#icon-pin-fill"/></svg></button></div>
             </div>
             <div class="note" data-tag="all">
               <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%23F59E0B'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3ERM%3C/text%3E%3C/svg%3E" alt="@ren.moves"><span class="note-user">@ren.moves <span>&middot; 3d</span></span></div>
               <p class="note-msg">okay but the choreo tutorial saved my recital 😭 you're a lifesaver</p>
-              <div class="note-foot"><button class="like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 8</button><button class="pin-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+              <div class="note-foot"><button class="pin-btn"><svg viewBox="0 0 256 256"><use href="#icon-pin-outline"/></svg></button></div>
             </div>
             <div class="note" data-tag="all">
               <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%2310B981'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3ETN%3C/text%3E%3C/svg%3E" alt="@theo.nyc"><span class="note-user">@theo.nyc <span>&middot; 6h</span></span></div>
               <p class="note-msg">You give the realest advice in DMs. Genuinely one of the good ones on here.</p>
-              <div class="note-foot"><button class="like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 23</button><button class="pin-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+              <div class="note-foot"><button class="pin-btn"><svg viewBox="0 0 256 256"><use href="#icon-pin-outline"/></svg></button></div>
             </div>
             <div class="note" data-tag="all">
               <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%23F97316'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3ESB%3C/text%3E%3C/svg%3E" alt="@sadie.b"><span class="note-user">@sadie.b <span>&middot; 2w</span></span></div>
               <p class="note-msg">Happy 2 years on iFollow! Watching your growth has been such a joy 🎉</p>
-              <div class="note-foot"><button class="like-btn liked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 19</button><button class="pin-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+              <div class="note-foot"><button class="pin-btn"><svg viewBox="0 0 256 256"><use href="#icon-pin-outline"/></svg></button></div>
             </div>
           </div>
         </div>
@@ -974,12 +974,6 @@
               <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect width='22' height='22' rx='11' fill='%231D9BF0'/%3E%3Ctext x='11' y='15' font-family='Arial,sans-serif' font-size='9' font-weight='700' fill='white' text-anchor='middle'%3EYOU%3C/text%3E%3C/svg%3E" alt="">
               <span>Posting as @you</span>
             </div>
-            <div class="color-picker" id="colorPicker">
-              <button class="color-dot selected" style="background:var(--pink)" data-accent="var(--pink)" title="Pink"></button>
-              <button class="color-dot" style="background:var(--amber)" data-accent="var(--amber)" title="Amber"></button>
-              <button class="color-dot" style="background:var(--purple)" data-accent="var(--purple)" title="Purple"></button>
-              <button class="color-dot" style="background:var(--blue)" data-accent="var(--blue)" title="Blue"></button>
-            </div>
           </div>
           <textarea class="compose-input" id="composeInput" placeholder="Write something kind and specific &hellip;"></textarea>
           <div class="block-banner" id="blockBanner">
@@ -988,7 +982,6 @@
           </div>
           <div class="compose-card-foot">
             <div class="ai-status ok" id="aiStatus">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg>
               <span id="aiStatusTxt">Looks kind and clear</span>
             </div>
             <span class="char-count" id="charCount">0 / 240</span>
@@ -1029,31 +1022,10 @@
           </div>
 
           <div class="cz-block">
-            <h3>Mural animation</h3>
-            <div class="anim-row">
-              <div class="anim-chip active">Gentle drift</div>
-              <div class="anim-chip">Sparkle</div>
-              <div class="anim-chip">None</div>
-            </div>
-          </div>
-
-          <div class="cz-block">
-            <h3>Arrangement</h3>
-            <div class="row-toggle">
-              <div><div class="rt-txt">AI auto-arrange</div><div class="rt-desc">Sizes &amp; layout refresh as new notes arrive</div></div>
-              <div class="switch on"></div>
-            </div>
-          </div>
-
-          <div class="cz-block">
             <h3>Moderation</h3>
             <div class="row-toggle">
               <div><div class="rt-txt">Approve before posting</div><div class="rt-desc">Review each note before it appears on your wall</div></div>
               <div class="switch on" id="modToggle"></div>
-            </div>
-            <div class="row-toggle">
-              <div><div class="rt-txt">AI toxicity filter</div><div class="rt-desc">Auto-block harmful notes, always on</div></div>
-              <div class="switch on" style="opacity:.6; pointer-events:none;"></div>
             </div>
           </div>
         </div>
@@ -1208,7 +1180,7 @@
     bioToggle.textContent = expanded ? 'Show more' : 'Show less';
   });
 
-  // Like / pin toggles on wall notes, with a small reward burst
+  // Pin toggle on wall notes, with a small reward burst
   function spawnBurst(btn, color){
     for (var i = 0; i < 6; i++){
       var p = document.createElement('span');
@@ -1220,25 +1192,22 @@
     }
   }
   function wireNoteButtons(scope){
-    scope.querySelectorAll('.like-btn').forEach(function(btn){
-      if (btn.dataset.wired) return;
-      btn.dataset.wired = '1';
-      btn.addEventListener('click', function(e){
-        e.stopPropagation();
-        var liked = btn.classList.toggle('liked');
-        var n = parseInt(btn.textContent.trim(), 10) || 0;
-        btn.innerHTML = btn.querySelector('svg').outerHTML + ' ' + (liked ? n + 1 : n - 1);
-        if (liked) spawnBurst(btn, 'var(--pink)');
-      });
-    });
     scope.querySelectorAll('.pin-btn').forEach(function(btn){
       if (btn.dataset.wired) return;
       btn.dataset.wired = '1';
       btn.addEventListener('click', function(e){
         e.stopPropagation();
         var active = btn.classList.toggle('active');
-        btn.closest('.note').classList.toggle('pinned', active);
-        if (active) spawnBurst(btn, 'var(--amber)');
+        var note = btn.closest('.note');
+        note.classList.toggle('pinned', active);
+        var use = btn.querySelector('use');
+        use.setAttribute('href', active ? '#icon-pin-fill' : '#icon-pin-outline');
+        if (active) {
+          spawnBurst(btn, 'var(--orange)');
+          note.classList.remove('pin-flash');
+          void note.offsetWidth;
+          note.classList.add('pin-flash');
+        }
       });
     });
   }
@@ -1263,12 +1232,6 @@
       sw.classList.add('selected');
       var wallBg = document.getElementById('wallBg');
       wallBg.className = 'wall-bg ' + sw.dataset.theme;
-    });
-  });
-  document.querySelectorAll('.anim-chip').forEach(function(c){
-    c.addEventListener('click', function(){
-      document.querySelectorAll('.anim-chip').forEach(function(x){ x.classList.remove('active'); });
-      c.classList.add('active');
     });
   });
   document.querySelectorAll('.switch').forEach(function(s){
@@ -1317,14 +1280,6 @@
       input.value = chip.dataset.fill;
       evalCompose();
       input.focus();
-    });
-  });
-  var composeArea = document.querySelector('.compose-area');
-  document.querySelectorAll('.color-dot').forEach(function(dot){
-    dot.addEventListener('click', function(){
-      document.querySelectorAll('.color-dot').forEach(function(d){ d.classList.remove('selected'); });
-      dot.classList.add('selected');
-      composeArea.style.setProperty('--note-accent', dot.dataset.accent);
     });
   });
   sendBtn.addEventListener('click', function(){
