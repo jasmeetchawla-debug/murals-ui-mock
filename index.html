@@ -402,20 +402,20 @@
   .ptopbar .icon-btn{width:44px; height:44px; background:transparent; border:none;}
   .ptopbar .icon-btn svg{width:20px; height:20px;}
 
-  .phead{padding:8px 16px 0;}
-  .phead-row{display:flex; align-items:flex-start; gap:16px;}
-  .avatar-sq{width:90px; height:90px; border-radius:18px; flex-shrink:0; display:block;}
-  .avatar-col{display:flex; flex-direction:column; align-items:flex-start; gap:8px; flex-shrink:0;}
+  .phead{padding:6px 16px 0;}
+  .phead-row{display:flex; align-items:flex-start; gap:13px;}
+  .avatar-sq{width:74px; height:74px; border-radius:15px; flex-shrink:0; display:block;}
+  .avatar-col{display:flex; flex-direction:column; align-items:flex-start; gap:6px; flex-shrink:0;}
   .streak-pill{
-    display:flex; align-items:center; gap:6px; background:var(--surface-2); border:1px solid rgba(249,115,22,.35);
+    display:flex; align-items:center; gap:4px; background:var(--surface-2); border:1px solid rgba(249,115,22,.35);
     background-image:linear-gradient(90deg, rgba(249,115,22,.12), transparent);
-    padding:6px 11px 6px 8px; border-radius:16px; font-size:12px; font-weight:700; color:var(--text);
+    padding:4px 7px 4px 6px; border-radius:13px; font-size:10.5px; font-weight:700; color:var(--text);
     white-space:nowrap; position:relative; overflow:hidden; cursor:pointer;
   }
   .streak-pill.inactive{border-color:var(--border); background-image:none; color:var(--text-muted);}
-  .streak-pill svg.flame{width:16px; height:16px; color:var(--orange); flex-shrink:0;}
+  .streak-pill svg.flame{width:14px; height:14px; color:var(--orange); flex-shrink:0;}
   .streak-pill.inactive svg.flame{color:var(--text-dim);}
-  .streak-pill svg.chevron{width:13px; height:13px; color:var(--text-dim); flex-shrink:0;}
+  .streak-pill svg.chevron{width:10px; height:10px; color:var(--text-dim); flex-shrink:0;}
   .streak-pill::after{
     content:""; position:absolute; inset:0; pointer-events:none;
     background:linear-gradient(100deg, transparent 40%, rgba(249,115,22,.22) 50%, transparent 60%);
@@ -424,40 +424,40 @@
   .streak-pill.inactive::after{display:none;}
   @keyframes streak-shine{ to{ transform:translateX(120%); } }
   @media (prefers-reduced-motion: reduce){ .streak-pill::after{animation:none;} }
-  .pinfo{flex:1; min-width:0; padding-top:2px;}
-  .pname-row{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
-  .pname{font-family:var(--font-head); font-weight:800; font-size:19px; margin:0;}
-  .pbadge{width:20px; height:20px; flex-shrink:0;}
+  .pinfo{flex:1; min-width:0; padding-top:1px;}
+  .pname-row{display:flex; align-items:center; gap:5px; flex-wrap:wrap;}
+  .pname{font-family:var(--font-head); font-weight:800; font-size:17px; margin:0;}
+  .pbadge{width:17px; height:17px; flex-shrink:0;}
   .itrust-chip{
     display:inline-flex; align-items:center; gap:3px; background:rgba(16,185,129,.14); color:var(--green);
-    font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:100px; height:24px;
+    font-size:10px; font-weight:800; padding:2px 6px; border-radius:100px; height:21px;
   }
-  .itrust-chip svg{width:11px; height:11px;}
-  .pbio{font-size:12.5px; color:var(--text); line-height:1.45; margin:2px 0 0;
+  .itrust-chip svg{width:10px; height:10px;}
+  .pbio{font-size:11.5px; color:var(--text); line-height:1.4; margin:1px 0 0;
     display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
-  .pbio-more{background:none; border:none; padding:2px 0 0; font-family:inherit; font-size:12px; font-weight:800; color:var(--orange); cursor:pointer;}
+  .pbio-more{background:none; border:none; padding:1px 0 0; font-family:inherit; font-size:11px; font-weight:800; color:var(--orange); cursor:pointer;}
 
-  .pstats-row{display:flex; justify-content:center; align-items:center; padding:20px 0 0;}
-  .pstat{text-align:center; padding:0 16px;}
-  .pstat b{display:block; font-family:var(--font-head); font-size:18px; font-weight:700;}
-  .pstat span{display:block; font-size:11px; color:var(--text-muted); margin-top:1px;}
-  .pstat-div{width:1px; height:32px; background:var(--text-muted); opacity:.35;}
+  .pstats-row{display:flex; justify-content:center; align-items:center; padding:14px 0 0;}
+  .pstat{text-align:center; padding:0 13px;}
+  .pstat b{display:block; font-family:var(--font-head); font-size:16px; font-weight:700;}
+  .pstat span{display:block; font-size:10.5px; color:var(--text-muted); margin-top:1px;}
+  .pstat-div{width:1px; height:26px; background:var(--text-muted); opacity:.35;}
 
-  .pactions{display:flex; gap:10px; padding:16px 0 0;}
+  .pactions{display:flex; gap:8px; padding:12px 0 0;}
   .paction-btn{
-    flex:1; height:44px; border-radius:12px; border:none; background:var(--brand-gradient);
-    color:#fff; font-family:inherit; font-weight:700; font-size:13px; cursor:pointer;
+    flex:1; height:40px; border-radius:10px; border:none; background:var(--brand-gradient);
+    color:#fff; font-family:inherit; font-weight:700; font-size:12px; cursor:pointer;
   }
   .paction-btn.secondary{
     background:var(--surface-2); border:1px solid var(--border); color:var(--text);
     display:flex; align-items:center; justify-content:center; gap:6px;
   }
-  .paction-btn.secondary svg{width:16px; height:16px;}
+  .paction-btn.secondary svg{width:14px; height:14px;}
   .icon-sq-btn{
-    width:44px; height:44px; border-radius:12px; background:var(--surface-2); border:none;
+    width:40px; height:40px; border-radius:10px; background:var(--surface-2); border:none;
     display:flex; align-items:center; justify-content:center; color:var(--text); cursor:pointer; flex-shrink:0;
   }
-  .icon-sq-btn svg{width:20px; height:20px;}
+  .icon-sq-btn svg{width:17px; height:17px;}
 
   /* ---- AI Profile Summary — compact chip FAB: whole pill glows, not just the icon ---- */
   .ai-fab{
