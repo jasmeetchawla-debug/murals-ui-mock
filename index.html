@@ -376,7 +376,7 @@
     border-radius:100px;
   }
   .device[data-platform="ios"] .icon-sq-btn, .device[data-platform="ios"] .mod-card, .device[data-platform="ios"] .icebreaker-card,
-  .device[data-platform="ios"] .compose-area, .device[data-platform="ios"] .ai-fab-bubble, .device[data-platform="ios"] .fab{ border-radius:16px; }
+  .device[data-platform="ios"] .compose-area, .device[data-platform="ios"] .fab{ border-radius:16px; }
   .device[data-platform="ios"] .rbottomnav{
     background:var(--surface); background:color-mix(in srgb, var(--surface) 82%, transparent);
     backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border-top:0.5px solid var(--border);
@@ -459,45 +459,27 @@
   }
   .icon-sq-btn svg{width:20px; height:20px;}
 
-  /* ---- AI Profile Summary — floating FAB + speech-bubble teaser ---- */
-  .ai-fab-wrap{
-    position:absolute; right:16px; bottom:16px; z-index:8;
-    display:flex; flex-direction:column; align-items:flex-end; gap:10px;
-  }
+  /* ---- AI Profile Summary — compact chip FAB: whole pill glows, not just the icon ---- */
   .ai-fab{
-    width:56px; height:56px; border-radius:50%; background:var(--brand-gradient); color:#fff; border:none;
-    position:relative; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
-    box-shadow:0 10px 24px -6px rgba(236,72,153,.55);
+    position:absolute; right:16px; bottom:16px; z-index:8;
+    display:inline-flex; align-items:center; height:34px; padding:0 13px 0 3px;
+    border-radius:17px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer;
+    box-shadow:var(--card-shadow);
+    animation:fab-in .4s cubic-bezier(.2,.8,.3,1) .5s both;
   }
-  .ai-fab svg{width:24px; height:24px; position:relative;}
-  .ai-icon-pulse{
-    position:absolute; inset:-5px; border-radius:50%; background:rgba(249,115,22,.5);
-    animation:ai-pulse 1.6s ease-in-out infinite alternate;
+  .ai-fab::before{
+    content:""; position:absolute; inset:-5px; border-radius:22px; background:var(--brand-gradient);
+    opacity:.3; filter:blur(3px); z-index:-1; animation:fab-pulse 1.8s ease-in-out infinite alternate;
   }
-  @keyframes ai-pulse{ from{transform:scale(1); opacity:.7;} to{transform:scale(1.2); opacity:.15;} }
-  .ai-chip{
-    background:var(--brand-gradient); color:#fff; font-size:9px; font-weight:900; letter-spacing:.03em;
-    padding:2px 6px; border-radius:100px; flex-shrink:0;
+  @keyframes fab-pulse{ from{opacity:.2; transform:scale(1);} to{opacity:.5; transform:scale(1.05);} }
+  .ai-fab-icon-wrap{
+    width:26px; height:26px; flex-shrink:0; border-radius:50%; background:var(--brand-gradient);
+    display:flex; align-items:center; justify-content:center; margin-right:8px;
   }
-  .ai-fab-bubble{
-    position:relative; max-width:184px; background:var(--surface); border:1px solid var(--border);
-    box-shadow:var(--card-shadow); border-radius:14px; padding:10px 26px 10px 12px;
-    animation:fab-bubble-in .4s cubic-bezier(.2,.8,.3,1) .7s both; cursor:pointer;
-  }
-  .ai-fab-bubble::after{
-    content:""; position:absolute; right:24px; bottom:-6px; width:11px; height:11px; background:var(--surface);
-    border-right:1px solid var(--border); border-bottom:1px solid var(--border); transform:rotate(45deg);
-  }
-  .ai-fab-bubble-title{font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:6px;}
-  .ai-fab-bubble-sub{font-size:10.5px; color:var(--text-muted); margin-top:2px;}
-  .ai-fab-close{
-    position:absolute; top:6px; right:6px; width:16px; height:16px; border-radius:50%; background:var(--surface-2);
-    border:none; color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
-  }
-  .ai-fab-close svg{width:9px; height:9px;}
-  .ai-fab-bubble.hide{display:none;}
-  @keyframes fab-bubble-in{ from{opacity:0; transform:translateY(8px) scale(.92);} to{opacity:1; transform:none;} }
-  @media (prefers-reduced-motion: reduce){ .ai-icon-pulse{animation:none;} .ai-fab-bubble{animation:none;} }
+  .ai-fab svg.spark{width:13px; height:13px; color:#fff;}
+  .ai-fab-label{font-size:12.5px; font-weight:800; color:var(--text); white-space:nowrap;}
+  @keyframes fab-in{ from{opacity:0; transform:translateY(10px) scale(.9);} to{opacity:1; transform:none;} }
+  @media (prefers-reduced-motion: reduce){ .ai-fab{animation:none;} .ai-fab::before{animation:none;} }
 
   .sheet-scrim{
     position:absolute; inset:0; z-index:30; background:rgba(0,0,0,.55); opacity:0; pointer-events:none;
@@ -841,17 +823,12 @@
         </div>
       </div>
 
-      <div class="ai-fab-wrap">
-        <div class="ai-fab-bubble" id="aiFabBubble">
-          <button class="ai-fab-close" id="aiFabBubbleClose" aria-label="Dismiss"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-          <div class="ai-fab-bubble-title">Get to know Juno <span class="ai-chip">AI</span></div>
-          <div class="ai-fab-bubble-sub">Tap for a short AI summary</div>
+      <button class="ai-fab" id="aiEntry" aria-label="Get to know Juno, AI summary">
+        <div class="ai-fab-icon-wrap">
+          <svg class="spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6z"/></svg>
         </div>
-        <button class="ai-fab" id="aiEntry" aria-label="Get to know Juno, AI summary">
-          <div class="ai-icon-pulse"></div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6z"/></svg>
-        </button>
-      </div>
+        <span class="ai-fab-label">Know Juno</span>
+      </button>
 
       <div class="sheet-scrim" id="aiScrim"></div>
       <div class="ai-sheet" id="aiSheet">
@@ -1155,11 +1132,7 @@
       }
     }, 900);
   }
-  var aiFabBubble = document.getElementById('aiFabBubble');
-  function hideAiFabBubble(){ aiFabBubble.classList.add('hide'); }
-  aiEntry.addEventListener('click', function(){ hideAiFabBubble(); openAiSheet(); });
-  aiFabBubble.addEventListener('click', function(){ hideAiFabBubble(); openAiSheet(); });
-  document.getElementById('aiFabBubbleClose').addEventListener('click', function(e){ e.stopPropagation(); hideAiFabBubble(); });
+  aiEntry.addEventListener('click', openAiSheet);
   aiScrim.addEventListener('click', closeAiSheet);
   document.getElementById('aiIcebreakerSkip').addEventListener('click', function(){ icebreakerShown = true; runAiPhase(false); });
   document.getElementById('aiIcebreakerSkip2').addEventListener('click', function(){ icebreakerShown = true; runAiPhase(false); });
