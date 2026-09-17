@@ -371,12 +371,12 @@
   .switcher-btn.active{background:var(--text); color:var(--bg); border-color:var(--text);}
 
   .device[data-platform="ios"] .paction-btn, .device[data-platform="ios"] .icon-sq-btn, .device[data-platform="ios"] .send-btn,
-  .device[data-platform="ios"] .ib-send, .device[data-platform="ios"] .fab, .device[data-platform="ios"] .ai-entry,
+  .device[data-platform="ios"] .ib-send, .device[data-platform="ios"] .fab,
   .device[data-platform="ios"] .mod-card, .device[data-platform="ios"] .icebreaker-card, .device[data-platform="ios"] .compose-area{
     border-radius:100px;
   }
   .device[data-platform="ios"] .icon-sq-btn, .device[data-platform="ios"] .mod-card, .device[data-platform="ios"] .icebreaker-card,
-  .device[data-platform="ios"] .compose-area, .device[data-platform="ios"] .ai-entry, .device[data-platform="ios"] .fab{ border-radius:16px; }
+  .device[data-platform="ios"] .compose-area, .device[data-platform="ios"] .ai-fab-bubble, .device[data-platform="ios"] .fab{ border-radius:16px; }
   .device[data-platform="ios"] .rbottomnav{
     background:var(--surface); background:color-mix(in srgb, var(--surface) 82%, transparent);
     backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border-top:0.5px solid var(--border);
@@ -459,36 +459,45 @@
   }
   .icon-sq-btn svg{width:20px; height:20px;}
 
-  /* ---- AI Profile Summary ---- */
-  .ai-entry{
-    display:flex; align-items:center; gap:12px; width:100%; margin-top:14px; padding:11px 13px;
-    border-radius:14px; background:var(--surface-2);
-    background-image:linear-gradient(120deg, rgba(249,115,22,.10), rgba(236,72,153,.05), transparent);
-    border:1.2px solid; border-image:linear-gradient(120deg, rgba(249,115,22,.8), rgba(236,72,153,.5), var(--border)) 1;
-    cursor:pointer; text-align:left; font-family:inherit; transition:transform .15s ease;
+  /* ---- AI Profile Summary — floating FAB + speech-bubble teaser ---- */
+  .ai-fab-wrap{
+    position:absolute; right:16px; bottom:16px; z-index:8;
+    display:flex; flex-direction:column; align-items:flex-end; gap:10px;
   }
-  .ai-entry:active{transform:scale(.98);}
-  .ai-icon-wrap{width:40px; height:40px; position:relative; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .ai-fab{
+    width:56px; height:56px; border-radius:50%; background:var(--brand-gradient); color:#fff; border:none;
+    position:relative; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+    box-shadow:0 10px 24px -6px rgba(236,72,153,.55);
+  }
+  .ai-fab svg{width:24px; height:24px; position:relative;}
   .ai-icon-pulse{
-    position:absolute; inset:0; border-radius:50%; background:rgba(249,115,22,.55);
+    position:absolute; inset:-5px; border-radius:50%; background:rgba(249,115,22,.5);
     animation:ai-pulse 1.6s ease-in-out infinite alternate;
   }
-  @keyframes ai-pulse{ from{transform:scale(1); opacity:.7;} to{transform:scale(1.25); opacity:.25;} }
-  .ai-icon-core{
-    width:36px; height:36px; border-radius:50%; background:var(--brand-gradient); position:relative;
-    display:flex; align-items:center; justify-content:center; color:#fff;
-  }
-  .ai-icon-core svg{width:16px; height:16px;}
-  .ai-entry-label{flex:1; min-width:0;}
-  .ai-entry-title-row{display:flex; align-items:center; gap:6px;}
-  .ai-entry-title-row b{font-size:14.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  @keyframes ai-pulse{ from{transform:scale(1); opacity:.7;} to{transform:scale(1.2); opacity:.15;} }
   .ai-chip{
     background:var(--brand-gradient); color:#fff; font-size:9px; font-weight:900; letter-spacing:.03em;
     padding:2px 6px; border-radius:100px; flex-shrink:0;
   }
-  .ai-entry-sub{font-size:11.5px; color:var(--text-muted); margin-top:1px;}
-  .ai-entry > svg.chevron{width:17px; height:17px; color:var(--orange); flex-shrink:0;}
-  @media (prefers-reduced-motion: reduce){ .ai-icon-pulse{animation:none;} }
+  .ai-fab-bubble{
+    position:relative; max-width:184px; background:var(--surface); border:1px solid var(--border);
+    box-shadow:var(--card-shadow); border-radius:14px; padding:10px 26px 10px 12px;
+    animation:fab-bubble-in .4s cubic-bezier(.2,.8,.3,1) .7s both; cursor:pointer;
+  }
+  .ai-fab-bubble::after{
+    content:""; position:absolute; right:24px; bottom:-6px; width:11px; height:11px; background:var(--surface);
+    border-right:1px solid var(--border); border-bottom:1px solid var(--border); transform:rotate(45deg);
+  }
+  .ai-fab-bubble-title{font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:6px;}
+  .ai-fab-bubble-sub{font-size:10.5px; color:var(--text-muted); margin-top:2px;}
+  .ai-fab-close{
+    position:absolute; top:6px; right:6px; width:16px; height:16px; border-radius:50%; background:var(--surface-2);
+    border:none; color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
+  }
+  .ai-fab-close svg{width:9px; height:9px;}
+  .ai-fab-bubble.hide{display:none;}
+  @keyframes fab-bubble-in{ from{opacity:0; transform:translateY(8px) scale(.92);} to{opacity:1; transform:none;} }
+  @media (prefers-reduced-motion: reduce){ .ai-icon-pulse{animation:none;} .ai-fab-bubble{animation:none;} }
 
   .sheet-scrim{
     position:absolute; inset:0; z-index:30; background:rgba(0,0,0,.55); opacity:0; pointer-events:none;
@@ -790,18 +799,6 @@
               <button class="icon-sq-btn" title="Share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="2.7"/><circle cx="6" cy="12" r="2.7"/><circle cx="18" cy="19" r="2.7"/><path d="M8.4 10.7l7.2-3.9M8.4 13.3l7.2 3.9"/></svg></button>
             </div>
 
-            <button class="ai-entry" id="aiEntry">
-              <div class="ai-icon-wrap">
-                <div class="ai-icon-pulse"></div>
-                <div class="ai-icon-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6z"/></svg></div>
-              </div>
-              <div class="ai-entry-label">
-                <div class="ai-entry-title-row"><b>Get to know Juno</b><span class="ai-chip">AI</span></div>
-                <div class="ai-entry-sub">A short AI-generated summary</div>
-              </div>
-              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
-            </button>
-
             <div class="mural-banner" data-open="wall" style="margin-top:16px;">
               <div class="mural-top">
                 <div class="mural-icon-ring">
@@ -842,6 +839,18 @@
             <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>1.8k</div></div>
           </div>
         </div>
+      </div>
+
+      <div class="ai-fab-wrap">
+        <div class="ai-fab-bubble" id="aiFabBubble">
+          <button class="ai-fab-close" id="aiFabBubbleClose" aria-label="Dismiss"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <div class="ai-fab-bubble-title">Get to know Juno <span class="ai-chip">AI</span></div>
+          <div class="ai-fab-bubble-sub">Tap for a short AI summary</div>
+        </div>
+        <button class="ai-fab" id="aiEntry" aria-label="Get to know Juno, AI summary">
+          <div class="ai-icon-pulse"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6z"/></svg>
+        </button>
       </div>
 
       <div class="sheet-scrim" id="aiScrim"></div>
@@ -1146,7 +1155,11 @@
       }
     }, 900);
   }
-  aiEntry.addEventListener('click', openAiSheet);
+  var aiFabBubble = document.getElementById('aiFabBubble');
+  function hideAiFabBubble(){ aiFabBubble.classList.add('hide'); }
+  aiEntry.addEventListener('click', function(){ hideAiFabBubble(); openAiSheet(); });
+  aiFabBubble.addEventListener('click', function(){ hideAiFabBubble(); openAiSheet(); });
+  document.getElementById('aiFabBubbleClose').addEventListener('click', function(e){ e.stopPropagation(); hideAiFabBubble(); });
   aiScrim.addEventListener('click', closeAiSheet);
   document.getElementById('aiIcebreakerSkip').addEventListener('click', function(){ icebreakerShown = true; runAiPhase(false); });
   document.getElementById('aiIcebreakerSkip2').addEventListener('click', function(){ icebreakerShown = true; runAiPhase(false); });
