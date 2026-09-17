@@ -1,0 +1,1361 @@
+<title>Appreciation Wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&family=Baloo+2:wght@600;700;800&display=swap">
+<style>
+  :root{
+    --bg:#F6F1E8; --surface:#FFFBFF; --surface-2:#FBF3E6; --border:#E9DFCB;
+    --text:#0E3A53; --text-muted:#4F616F; --text-dim:#7C8D99;
+    --orange:#F97316; --pink:#EC4899; --purple:#9333EA; --amber:#F59E0B;
+    --green:#10B981; --red:#EF4444; --blue:#1D9BF0;
+    --brand-gradient: linear-gradient(135deg,var(--orange),var(--pink) 55%,var(--purple));
+    --shadow: 0 10px 30px -12px rgba(14,58,83,.25);
+    --card-shadow: 0 6px 18px -8px rgba(14,58,83,.18);
+    color-scheme: light dark;
+    --font-head:'Baloo 2',sans-serif; --font-body:'Manrope',sans-serif; --font-note:'Caveat',cursive;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0A0A0F; --surface:#13131A; --surface-2:#1C1C28; --border:#2A2A3C;
+      --text:#EEEEF0; --text-muted:#8888A0; --text-dim:#55556A;
+      --shadow: 0 10px 30px -12px rgba(0,0,0,.6);
+      --card-shadow: 0 6px 18px -8px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0A0A0F; --surface:#13131A; --surface-2:#1C1C28; --border:#2A2A3C;
+    --text:#EEEEF0; --text-muted:#8888A0; --text-dim:#55556A;
+    --shadow: 0 10px 30px -12px rgba(0,0,0,.6);
+    --card-shadow: 0 6px 18px -8px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Manrope',-apple-system,'Segoe UI',sans-serif;
+    padding:24px 16px 48px; display:flex; flex-direction:column; align-items:center; gap:22px;
+    min-height:100%;
+  }
+
+  /* ---- Prototype chrome (outside phone) ---- */
+  .intro{max-width:640px; text-align:center; padding:4px 8px 2px;}
+  .eyebrow{
+    font-size:11.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--pink); margin:0 0 8px;
+  }
+  h1.title{
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:clamp(26px,5vw,34px);
+    margin:0 0 8px; text-wrap:balance; letter-spacing:-.01em;
+  }
+  .title .grad{background:var(--brand-gradient); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .sub{color:var(--text-muted); font-size:14.5px; line-height:1.55; margin:0; text-wrap:balance;}
+
+  .tabs{
+    display:flex; gap:6px; background:var(--surface-2); border:1px solid var(--border);
+    padding:5px; border-radius:16px; flex-wrap:wrap; justify-content:center; max-width:640px;
+  }
+  .tab{
+    appearance:none; border:none; background:transparent; color:var(--text-muted);
+    font-family:inherit; font-weight:700; font-size:12.5px; padding:9px 14px; border-radius:12px;
+    cursor:pointer; transition:background .2s ease, color .2s ease; white-space:nowrap;
+  }
+  .tab:hover{color:var(--text);}
+  .tab.active{background:var(--surface); color:var(--text); box-shadow:var(--card-shadow);}
+  .tab .n{
+    display:inline-block; min-width:16px; height:16px; line-height:16px; font-size:10px;
+    background:var(--red); color:#fff; border-radius:8px; margin-left:6px; padding:0 4px; font-weight:800;
+  }
+
+  /* ---- Device frame ---- */
+  .device{
+    width:378px; max-width:92vw; height:790px; max-height:82vh;
+    background:#000; border-radius:46px; padding:12px; box-shadow:var(--shadow);
+    position:relative; flex-shrink:0; font-family:var(--font-body);
+  }
+  .device::before{
+    content:""; position:absolute; top:16px; left:50%; transform:translateX(-50%);
+    width:12px; height:12px; background:#000; border:1.5px solid #222; border-radius:50%; z-index:20;
+  }
+  .device[data-platform="ios"]::before{
+    top:12px; width:120px; height:26px; border:none; border-radius:16px;
+  }
+  .screen{
+    width:100%; height:100%; background:var(--bg); border-radius:34px; overflow:hidden;
+    position:relative; display:flex; flex-direction:column;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center; padding:16px 22px 4px;
+    font-size:13px; font-weight:700; color:var(--text); flex-shrink:0; position:relative; z-index:10;
+  }
+  .statusbar .icons{display:flex; align-items:center; gap:5px; opacity:.85;}
+  .view{ flex:1; min-height:0; overflow-y:auto; display:none; flex-direction:column; scrollbar-width:none; }
+  .view::-webkit-scrollbar{display:none;}
+  .view.active{display:flex;}
+
+  /* ---- Reusable icon button ---- */
+  .icon-btn{
+    width:36px; height:36px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text); flex-shrink:0; cursor:pointer;
+  }
+  svg.i{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;}
+
+  /* ================= APPRECIATION MURAL BANNER ================= */
+  .mural-banner{
+    border-radius:16px; padding:12px 13px 11px; position:relative; overflow:hidden; cursor:pointer;
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(249,115,22,.30), transparent 55%),
+      radial-gradient(120% 140% at 100% 0%, rgba(147,51,234,.30), transparent 55%),
+      var(--surface-2);
+    border:1px solid var(--border); margin-bottom:18px; transition:transform .2s ease;
+  }
+  .mural-banner:active{transform:scale(.98);}
+  .mural-top{display:flex; align-items:center; gap:6px; margin-bottom:7px;}
+  .mural-top svg.i{stroke:var(--pink); width:14px; height:14px;}
+  .mural-eyebrow{font-size:10px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--pink);}
+  .mural-title{font-family:var(--font-head); font-weight:700; font-size:14.5px; margin:0 0 2px;}
+  .mural-desc{font-size:11.5px; color:var(--text-muted); margin:0 0 9px;}
+  .mural-stack{display:flex; align-items:center; gap:-8px;}
+  .stack-notes{display:flex;}
+  .mini-note{
+    width:30px; height:30px; border-radius:9px; background:var(--surface); border:1px solid var(--border);
+    font-family:var(--font-note); font-weight:700; font-size:11px; display:flex; align-items:center; justify-content:center;
+    margin-left:-9px; box-shadow:0 3px 8px rgba(0,0,0,.15); transform:rotate(var(--r,0deg));
+  }
+  .mini-note:first-child{margin-left:0;}
+  .mural-cta{
+    margin-left:auto; display:flex; align-items:center; gap:4px; font-size:11px; font-weight:800; color:var(--text);
+  }
+  .mural-count{font-size:10.5px; color:var(--text-dim); margin-left:6px;}
+
+  /* ================= FULL WALL ================= */
+  .wall-view{position:relative;}
+  .wall-bg{
+    position:absolute; inset:0; z-index:0; transition:background 1s ease;
+    background:
+      radial-gradient(90% 60% at 15% 0%, rgba(249,115,22,.28), transparent 60%),
+      radial-gradient(80% 55% at 100% 15%, rgba(147,51,234,.30), transparent 60%),
+      radial-gradient(70% 50% at 30% 100%, rgba(236,72,153,.22), transparent 60%),
+      var(--bg);
+  }
+  .wall-bg.theme-ocean{background:
+      radial-gradient(90% 60% at 10% 0%, rgba(29,155,240,.32), transparent 60%),
+      radial-gradient(80% 55% at 100% 20%, rgba(16,185,129,.24), transparent 60%),
+      var(--bg);}
+  .wall-bg.theme-midnight{background:
+      radial-gradient(90% 60% at 20% 0%, rgba(147,51,234,.35), transparent 60%),
+      radial-gradient(70% 55% at 100% 100%, rgba(29,155,240,.22), transparent 60%),
+      var(--bg);}
+  .wall-bg.theme-sunset{background:
+      radial-gradient(90% 60% at 0% 0%, rgba(245,158,11,.32), transparent 60%),
+      radial-gradient(80% 55% at 100% 30%, rgba(236,72,153,.30), transparent 60%),
+      var(--bg);}
+  .wall-header{
+    position:relative; z-index:2; display:flex; align-items:center; gap:8px; padding:12px 14px 6px; flex-shrink:0;
+  }
+  .wall-header > div:not(.icon-btn){flex:1; min-width:0;}
+  .wall-header h2{font-family:var(--font-head); font-size:15px; margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .wall-header .wh-sub{font-size:10.5px; color:var(--text-muted); font-weight:600;}
+  .chip-row{display:flex; align-items:center; gap:7px; padding:0 16px 12px; position:relative; z-index:2; flex-shrink:0;}
+  .chip{
+    padding:7px 13px; border-radius:100px; font-size:12px; font-weight:700; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text-muted); cursor:pointer;
+  }
+  .chip.active{background:var(--text); color:var(--bg); border-color:var(--text);}
+  .wall-scroll{position:relative; z-index:1; flex:1; overflow-y:auto; padding:0 12px 90px;}
+  .masonry{column-count:2; column-gap:10px;}
+  .note{
+    break-inside:avoid; margin-bottom:10px; border-radius:16px; padding:13px 13px 11px;
+    background:var(--surface); border:1px solid var(--border); box-shadow:var(--card-shadow);
+    position:relative; cursor:pointer; transition:transform .15s ease;
+  }
+  .note:active{transform:scale(.97);}
+  @keyframes note-in{ from{opacity:0; transform:translateY(16px) scale(.96);} to{opacity:1; transform:none;} }
+  .masonry .note{animation:note-in .45s cubic-bezier(.2,.8,.3,1) both;}
+  .masonry .note:nth-child(1){animation-delay:.02s;} .masonry .note:nth-child(2){animation-delay:.08s;}
+  .masonry .note:nth-child(3){animation-delay:.14s;} .masonry .note:nth-child(4){animation-delay:.2s;}
+  .masonry .note:nth-child(5){animation-delay:.26s;} .masonry .note:nth-child(6){animation-delay:.32s;}
+  @media (prefers-reduced-motion: reduce){ .masonry .note{animation:none;} }
+  .note.pinned{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber), var(--card-shadow);}
+  .note .pin-ribbon{position:absolute; top:-6px; right:10px; color:var(--amber);}
+  .note .pin-ribbon svg{width:18px; height:18px; fill:var(--amber); stroke:var(--amber);}
+  .note-head{display:flex; align-items:center; gap:7px; margin-bottom:7px;}
+  .note-av{width:24px; height:24px; border-radius:50%; flex-shrink:0;}
+  .note-user{font-size:11.5px; font-weight:800;}
+  .note-user span{color:var(--text-dim); font-weight:600;}
+  .note-msg{font-family:var(--font-note); font-weight:600; line-height:1.22; color:var(--text); margin:0 0 8px;}
+  .note-foot{display:flex; align-items:center; gap:12px;}
+  .like-btn{display:flex; align-items:center; gap:4px; font-size:11.5px; font-weight:700; color:var(--text-dim); cursor:pointer; background:none; border:none; font-family:inherit; padding:0;}
+  .like-btn svg{width:15px; height:15px;}
+  .like-btn.liked{color:var(--pink);}
+  .like-btn.liked svg{fill:var(--pink); stroke:var(--pink);}
+  .pin-btn{margin-left:auto; color:var(--text-dim); cursor:pointer; background:none; border:none; display:flex;}
+  .pin-btn svg{width:15px; height:15px;}
+  .pin-btn.active{color:var(--amber);}
+  .pin-btn.active svg{fill:var(--amber); stroke:var(--amber);}
+
+  .fab{
+    position:absolute; z-index:5; left:16px; right:16px; bottom:16px; height:50px; border-radius:25px;
+    background:var(--brand-gradient); color:#fff; border:none; font-family:inherit; font-weight:800; font-size:14.5px;
+    display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; box-shadow:0 10px 24px -8px rgba(236,72,153,.55);
+  }
+  .fab svg{width:18px; height:18px;}
+
+  /* ================= COMPOSE ================= */
+  .compose-head{display:flex; align-items:center; gap:12px; padding:14px 16px 4px; flex-shrink:0;}
+  .compose-head h2{font-family:var(--font-head); font-size:17px; margin:0; flex:1;}
+  .compose-scroll{flex:1; overflow-y:auto; padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));}
+
+  .compose-to{
+    display:flex; align-items:center; gap:11px; padding:11px 13px; border-radius:14px; margin-bottom:16px;
+    background:var(--surface-2); border:1px solid var(--border);
+  }
+  .compose-to img{width:38px; height:38px; border-radius:50%; flex-shrink:0;}
+  .compose-to-name{font-size:13px; font-weight:700;}
+  .compose-to-sub{font-size:11px; color:var(--text-muted); margin-top:1px;}
+  .compose-to-badge{
+    margin-left:auto; font-size:10px; font-weight:700; color:var(--text-dim); background:var(--surface);
+    border:1px solid var(--border); padding:3px 8px; border-radius:100px; white-space:nowrap; flex-shrink:0;
+  }
+
+  .prompt-row{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; margin-bottom:16px; scrollbar-width:none;}
+  .prompt-row::-webkit-scrollbar{display:none;}
+  .prompt-chip{
+    flex-shrink:0; white-space:nowrap; font-size:12px; font-weight:600; color:var(--text); font-family:inherit;
+    background:var(--surface-2); border:1px solid var(--border); padding:8px 13px; border-radius:100px; cursor:pointer;
+  }
+  .prompt-chip:active{transform:scale(.96);}
+
+  .compose-area{
+    border-radius:18px; background:var(--surface-2); border:1px solid var(--border);
+    padding:16px; display:flex; flex-direction:column; position:relative; overflow:hidden;
+  }
+  .compose-area::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--note-accent, var(--pink));
+    transition:background .25s ease;
+  }
+  .compose-top-row{display:flex; align-items:center; gap:8px; margin-bottom:12px;}
+  .compose-as{display:flex; align-items:center; gap:7px; flex:1; min-width:0;}
+  .compose-as img{width:22px; height:22px; border-radius:50%; flex-shrink:0;}
+  .compose-as span{font-size:11.5px; color:var(--text-muted); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .color-picker{display:flex; gap:6px; flex-shrink:0;}
+  .color-dot{width:18px; height:18px; border-radius:50%; cursor:pointer; border:2px solid transparent; padding:0;}
+  .color-dot.selected{border-color:var(--text);}
+
+  textarea.compose-input{
+    flex:1; resize:none; border:none; background:transparent; color:var(--text); font-family:var(--font-note);
+    font-size:21px; line-height:1.35; outline:none; min-height:130px;
+  }
+  textarea.compose-input::placeholder{color:var(--text-dim); font-family:var(--font-body); font-size:13.5px;}
+
+  .compose-card-foot{display:flex; align-items:center; gap:8px; padding-top:12px; margin-top:4px; border-top:1px solid var(--border);}
+  .ai-status{
+    display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:var(--text-muted);
+    background:var(--surface); border:1px solid var(--border); padding:5px 10px; border-radius:100px;
+  }
+  .ai-status svg{width:12px; height:12px; flex-shrink:0;}
+  .ai-status.ok{color:var(--green); border-color:rgba(16,185,129,.35);}
+  .ai-status.block{color:var(--red); border-color:rgba(239,68,68,.4);}
+  .char-count{font-size:10.5px; color:var(--text-dim); margin-left:auto; font-variant-numeric:tabular-nums;}
+
+  .block-banner{
+    margin-top:12px; padding:11px 13px; border-radius:12px; background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.4);
+    color:var(--red); font-size:12px; font-weight:600; line-height:1.4; display:none; align-items:flex-start; gap:8px;
+  }
+  .block-banner.show{display:flex;}
+  .block-banner svg{width:16px; height:16px; flex-shrink:0; margin-top:1px;}
+
+  .compose-foot{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-shrink:0;
+    padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px)); border-top:1px solid var(--border);
+  }
+  .demo-link{background:none; border:none; color:var(--text-dim); font-family:inherit; font-size:10.5px; font-weight:600; cursor:pointer; text-decoration:underline; text-underline-offset:2px; padding:4px 0;}
+  .send-btn{
+    background:var(--brand-gradient); color:#fff; border:none; font-family:inherit; font-weight:800; font-size:13.5px;
+    padding:11px 22px; border-radius:14px; cursor:pointer; opacity:1; transition:opacity .2s; display:flex; align-items:center; gap:6px;
+  }
+  .send-btn svg{width:14px; height:14px;}
+  .send-btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  /* ================= CUSTOMIZE ================= */
+  .cz-scroll{padding:16px 18px calc(28px + env(safe-area-inset-bottom,0px));}
+  .cz-title{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+  .cz-title h2{font-family:var(--font-head); font-size:18px; margin:0;}
+  .cz-block{margin-bottom:22px;}
+  .cz-block h3{font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); margin:0 0 11px;}
+  .swatches{display:flex; gap:10px; flex-wrap:wrap;}
+  .swatch{
+    width:52px; height:52px; border-radius:16px; cursor:pointer; border:2px solid transparent; position:relative; flex-shrink:0;
+  }
+  .swatch.selected{border-color:var(--text);}
+  .swatch.selected::after{
+    content:""; position:absolute; inset:-6px; border-radius:20px; border:1.5px solid var(--text); opacity:.5;
+  }
+  .sw-sunset{background:radial-gradient(circle at 30% 20%, #F59E0B, #EC4899 60%, #9333EA);}
+  .sw-ocean{background:radial-gradient(circle at 30% 20%, #1D9BF0, #10B981 70%);}
+  .sw-midnight{background:radial-gradient(circle at 30% 20%, #9333EA, #1D9BF0 70%);}
+  .sw-classic{background:radial-gradient(circle at 30% 20%, #F97316, #EC4899 55%, #9333EA);}
+  .upload-tile{
+    width:52px; height:52px; border-radius:16px; border:1.5px dashed var(--border); display:flex; align-items:center; justify-content:center;
+    color:var(--text-dim); cursor:pointer; flex-shrink:0;
+  }
+  .row-toggle{
+    display:flex; align-items:center; justify-content:space-between; padding:13px 14px; background:var(--surface-2);
+    border:1px solid var(--border); border-radius:14px; margin-bottom:9px;
+  }
+  .row-toggle .rt-txt{font-size:13px; font-weight:700;}
+  .row-toggle .rt-desc{font-size:11.5px; color:var(--text-muted); margin-top:2px; font-weight:500;}
+  .switch{width:42px; height:25px; border-radius:14px; background:var(--border); position:relative; cursor:pointer; flex-shrink:0; transition:background .2s;}
+  .switch.on{background:var(--green);}
+  .switch::after{content:""; position:absolute; width:19px; height:19px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.3);}
+  .switch.on::after{transform:translateX(17px);}
+  .anim-row{display:flex; gap:8px;}
+  .anim-chip{flex:1; padding:11px 6px; border-radius:12px; background:var(--surface-2); border:1px solid var(--border); text-align:center; font-size:11.5px; font-weight:700; color:var(--text-muted); cursor:pointer;}
+  .anim-chip.active{background:var(--text); color:var(--bg); border-color:var(--text);}
+
+  /* ================= MODERATION ================= */
+  .mod-scroll{padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px));}
+  .mod-head{margin-bottom:6px;}
+  .mod-head h2{font-family:var(--font-head); font-size:17px; margin:0 0 3px;}
+  .mod-head p{font-size:12px; color:var(--text-muted); margin:0 0 16px;}
+  .mod-card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:16px; padding:13px; margin-bottom:11px;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .mod-card.flagged{border-color:rgba(239,68,68,.5); background:rgba(239,68,68,.06);}
+  .mod-top{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .mod-av{width:26px; height:26px; border-radius:50%;}
+  .mod-user{font-size:12px; font-weight:800; flex:1;}
+  .mod-time{font-size:10.5px; color:var(--text-dim);}
+  .flag-badge{
+    display:inline-flex; align-items:center; gap:4px; background:rgba(239,68,68,.15); color:var(--red);
+    font-size:10px; font-weight:800; padding:3px 8px; border-radius:100px; margin-bottom:8px;
+  }
+  .flag-badge svg{width:11px; height:11px;}
+  .mod-msg{font-family:var(--font-note); font-size:18px; font-weight:600; color:var(--text); margin:0 0 11px; line-height:1.25;}
+  .mod-actions{display:flex; gap:8px;}
+  .act-btn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px; border-radius:11px;
+    font-size:12px; font-weight:800; cursor:pointer; border:1px solid var(--border); font-family:inherit;
+  }
+  .act-btn svg{width:15px; height:15px;}
+  .act-approve{background:rgba(16,185,129,.14); color:var(--green); border-color:rgba(16,185,129,.35);}
+  .act-reject{background:rgba(239,68,68,.12); color:var(--red); border-color:rgba(239,68,68,.35);}
+  .mod-empty{text-align:center; padding:40px 20px; color:var(--text-dim); font-size:13px; display:none;}
+  .mod-empty svg{width:34px; height:34px; margin-bottom:10px; opacity:.6;}
+
+  .hint{max-width:640px; text-align:center; font-size:12px; color:var(--text-dim); line-height:1.5; padding:0 8px;}
+  @media (max-width:420px){ .device{height:76vh;} }
+
+  /* ==================================================================
+     Micro-interactions — ambient icon ring, like/pin reward bursts.
+  ================================================================== */
+  .mural-icon-ring{position:relative; width:18px; height:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .mural-icon-ring::before{
+    content:""; position:absolute; inset:-3px; border-radius:50%; border:1.5px dashed rgba(249,115,22,.45);
+    animation:ring-spin 6s linear infinite;
+  }
+  .mural-icon-ring svg{stroke:var(--pink); width:13px; height:13px; position:relative;}
+  @keyframes ring-spin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .mural-icon-ring::before{animation:none;} }
+
+  .like-btn, .pin-btn{ position:relative; }
+  .like-btn svg, .pin-btn svg{ transition:transform .35s cubic-bezier(.34,1.8,.64,1); }
+  .like-btn.liked svg{ transform:scale(1.15); }
+  .pin-btn.active svg{ transform:scale(1.15) rotate(-8deg); }
+  .burst{
+    position:absolute; top:50%; left:8px; width:4px; height:4px; border-radius:50%; pointer-events:none;
+    transform:translate(-50%,-50%); animation:burst-out .55s ease-out forwards;
+  }
+  @keyframes burst-out{
+    from{ opacity:1; transform:translate(-50%,-50%) rotate(var(--a)) translateX(0) scale(1); }
+    to{ opacity:0; transform:translate(-50%,-50%) rotate(var(--a)) translateX(16px) scale(.3); }
+  }
+
+  /* ==================================================================
+     PLATFORM VARIANT — CSS-only chrome swap (same markup either way).
+  ================================================================== */
+  .switcher-row{display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:center;}
+  .switcher-label{font-size:11px; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; margin-right:2px;}
+  .switcher-btn{
+    appearance:none; border:1px solid var(--border); background:var(--surface-2); color:var(--text-muted);
+    font-family:inherit; font-weight:700; font-size:11.5px; padding:7px 12px; border-radius:100px; cursor:pointer;
+  }
+  .switcher-btn.active{background:var(--text); color:var(--bg); border-color:var(--text);}
+
+  .device[data-platform="ios"] .paction-btn, .device[data-platform="ios"] .icon-sq-btn, .device[data-platform="ios"] .send-btn,
+  .device[data-platform="ios"] .ib-send, .device[data-platform="ios"] .fab, .device[data-platform="ios"] .ai-entry,
+  .device[data-platform="ios"] .mod-card, .device[data-platform="ios"] .icebreaker-card, .device[data-platform="ios"] .compose-area{
+    border-radius:100px;
+  }
+  .device[data-platform="ios"] .icon-sq-btn, .device[data-platform="ios"] .mod-card, .device[data-platform="ios"] .icebreaker-card,
+  .device[data-platform="ios"] .compose-area, .device[data-platform="ios"] .ai-entry, .device[data-platform="ios"] .fab{ border-radius:16px; }
+  .device[data-platform="ios"] .rbottomnav{
+    background:var(--surface); background:color-mix(in srgb, var(--surface) 82%, transparent);
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border-top:0.5px solid var(--border);
+  }
+  .device[data-platform="ios"] .rnav-fab{
+    margin-top:0; width:44px; height:44px; border-radius:12px; box-shadow:none; background:var(--surface-2); color:var(--orange);
+  }
+  .device[data-platform="ios"] .rnavitem span{ font-weight:600; }
+  .device[data-platform="ios"] .ptopbar-title{ font-weight:800; }
+  .device[data-platform="ios"] .ai-sheet, .device[data-platform="ios"] .sheet-scrim ~ .ai-sheet{ border-radius:22px 22px 0 0; }
+  .device[data-platform="ios"] .ai-sheet::before{
+    content:""; position:absolute; top:9px; left:50%; transform:translateX(-50%); width:36px; height:4px;
+    border-radius:2px; background:var(--text-dim); opacity:.5;
+  }
+  .device[data-platform="ios"] .ai-sheet-head{ margin-top:6px; }
+  .device[data-platform="android"] .icon-btn:active, .device[data-platform="android"] .ptab:active{ opacity:.7; }
+
+  /* ---- Real ProfileScreen chrome ---- */
+  .ptopbar{display:flex; align-items:center; padding:8px 6px 2px; flex-shrink:0;}
+  .ptopbar-side{display:flex; gap:2px; width:92px; flex-shrink:0;}
+  .ptopbar-side.right{justify-content:flex-end;}
+  .ptopbar-title{flex:1; text-align:center; font-weight:700; font-size:15px;}
+  .ptopbar .icon-btn{width:44px; height:44px; background:transparent; border:none;}
+  .ptopbar .icon-btn svg{width:20px; height:20px;}
+
+  .phead{padding:8px 16px 0;}
+  .phead-row{display:flex; align-items:flex-start; gap:16px;}
+  .avatar-sq{width:90px; height:90px; border-radius:18px; flex-shrink:0; display:block;}
+  .avatar-col{display:flex; flex-direction:column; align-items:flex-start; gap:8px; flex-shrink:0;}
+  .streak-pill{
+    display:flex; align-items:center; gap:6px; background:var(--surface-2); border:1px solid rgba(249,115,22,.35);
+    background-image:linear-gradient(90deg, rgba(249,115,22,.12), transparent);
+    padding:6px 11px 6px 8px; border-radius:16px; font-size:12px; font-weight:700; color:var(--text);
+    white-space:nowrap; position:relative; overflow:hidden; cursor:pointer;
+  }
+  .streak-pill.inactive{border-color:var(--border); background-image:none; color:var(--text-muted);}
+  .streak-pill svg.flame{width:16px; height:16px; color:var(--orange); flex-shrink:0;}
+  .streak-pill.inactive svg.flame{color:var(--text-dim);}
+  .streak-pill svg.chevron{width:13px; height:13px; color:var(--text-dim); flex-shrink:0;}
+  .streak-pill::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(100deg, transparent 40%, rgba(249,115,22,.22) 50%, transparent 60%);
+    transform:translateX(-120%); animation:streak-shine 2.6s linear infinite;
+  }
+  .streak-pill.inactive::after{display:none;}
+  @keyframes streak-shine{ to{ transform:translateX(120%); } }
+  @media (prefers-reduced-motion: reduce){ .streak-pill::after{animation:none;} }
+  .pinfo{flex:1; min-width:0; padding-top:2px;}
+  .pname-row{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .pname{font-family:var(--font-head); font-weight:800; font-size:19px; margin:0;}
+  .pbadge{width:20px; height:20px; flex-shrink:0;}
+  .itrust-chip{
+    display:inline-flex; align-items:center; gap:3px; background:rgba(16,185,129,.14); color:var(--green);
+    font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:100px; height:24px;
+  }
+  .itrust-chip svg{width:11px; height:11px;}
+  .pbio{font-size:12.5px; color:var(--text); line-height:1.45; margin:2px 0 0;
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+  .pbio-more{background:none; border:none; padding:2px 0 0; font-family:inherit; font-size:12px; font-weight:800; color:var(--orange); cursor:pointer;}
+
+  .pstats-row{display:flex; justify-content:center; align-items:center; padding:20px 0 0;}
+  .pstat{text-align:center; padding:0 16px;}
+  .pstat b{display:block; font-family:var(--font-head); font-size:18px; font-weight:700;}
+  .pstat span{display:block; font-size:11px; color:var(--text-muted); margin-top:1px;}
+  .pstat-div{width:1px; height:32px; background:var(--text-muted); opacity:.35;}
+
+  .pactions{display:flex; gap:10px; padding:16px 0 0;}
+  .paction-btn{
+    flex:1; height:44px; border-radius:12px; border:none; background:var(--brand-gradient);
+    color:#fff; font-family:inherit; font-weight:700; font-size:13px; cursor:pointer;
+  }
+  .paction-btn.secondary{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .paction-btn.secondary svg{width:16px; height:16px;}
+  .icon-sq-btn{
+    width:44px; height:44px; border-radius:12px; background:var(--surface-2); border:none;
+    display:flex; align-items:center; justify-content:center; color:var(--text); cursor:pointer; flex-shrink:0;
+  }
+  .icon-sq-btn svg{width:20px; height:20px;}
+
+  /* ---- AI Profile Summary ---- */
+  .ai-entry{
+    display:flex; align-items:center; gap:12px; width:100%; margin-top:14px; padding:11px 13px;
+    border-radius:14px; background:var(--surface-2);
+    background-image:linear-gradient(120deg, rgba(249,115,22,.10), rgba(236,72,153,.05), transparent);
+    border:1.2px solid; border-image:linear-gradient(120deg, rgba(249,115,22,.8), rgba(236,72,153,.5), var(--border)) 1;
+    cursor:pointer; text-align:left; font-family:inherit; transition:transform .15s ease;
+  }
+  .ai-entry:active{transform:scale(.98);}
+  .ai-icon-wrap{width:40px; height:40px; position:relative; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .ai-icon-pulse{
+    position:absolute; inset:0; border-radius:50%; background:rgba(249,115,22,.55);
+    animation:ai-pulse 1.6s ease-in-out infinite alternate;
+  }
+  @keyframes ai-pulse{ from{transform:scale(1); opacity:.7;} to{transform:scale(1.25); opacity:.25;} }
+  .ai-icon-core{
+    width:36px; height:36px; border-radius:50%; background:var(--brand-gradient); position:relative;
+    display:flex; align-items:center; justify-content:center; color:#fff;
+  }
+  .ai-icon-core svg{width:16px; height:16px;}
+  .ai-entry-label{flex:1; min-width:0;}
+  .ai-entry-title-row{display:flex; align-items:center; gap:6px;}
+  .ai-entry-title-row b{font-size:14.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ai-chip{
+    background:var(--brand-gradient); color:#fff; font-size:9px; font-weight:900; letter-spacing:.03em;
+    padding:2px 6px; border-radius:100px; flex-shrink:0;
+  }
+  .ai-entry-sub{font-size:11.5px; color:var(--text-muted); margin-top:1px;}
+  .ai-entry > svg.chevron{width:17px; height:17px; color:var(--orange); flex-shrink:0;}
+  @media (prefers-reduced-motion: reduce){ .ai-icon-pulse{animation:none;} }
+
+  .sheet-scrim{
+    position:absolute; inset:0; z-index:30; background:rgba(0,0,0,.55); opacity:0; pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .sheet-scrim.show{opacity:1; pointer-events:auto;}
+  .ai-sheet{
+    position:absolute; left:0; right:0; bottom:0; z-index:31; background:var(--bg); border:1px solid var(--border);
+    border-radius:20px 20px 0 0; padding:18px 18px calc(20px + env(safe-area-inset-bottom,0px));
+    max-height:64%; display:flex; flex-direction:column; transform:translateY(102%);
+    transition:transform .32s cubic-bezier(.2,.9,.25,1); box-shadow:0 -12px 30px rgba(0,0,0,.35);
+  }
+  .ai-sheet.show{transform:translateY(0);}
+  .ai-sheet-head{display:flex; align-items:center; gap:8px; margin-bottom:14px;}
+  .ai-sheet-head b{font-size:16px; font-weight:800; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .ai-badge{font-size:10px; font-weight:700; color:var(--text-muted); background:var(--surface-2); border:1px solid var(--border); padding:2px 8px; border-radius:100px; flex-shrink:0;}
+  .tone-row{display:flex; gap:8px; margin-bottom:14px;}
+  .tone-chip{
+    padding:8px 14px; border-radius:100px; font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit;
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted);
+  }
+  .tone-chip.active{background:var(--brand-gradient); border-color:transparent; color:#fff;}
+  .ai-divider{height:1px; background:var(--border); margin-bottom:14px;}
+  .ai-body{flex:1; min-height:0; overflow-y:auto;}
+  .ai-loading-row{display:flex; align-items:center; gap:12px;}
+  .ai-spinner{
+    width:20px; height:20px; border-radius:50%; flex-shrink:0;
+    border:2.5px solid transparent; border-top-color:var(--orange); border-right-color:var(--pink);
+    animation:ai-spin .9s linear infinite;
+  }
+  @keyframes ai-spin{ to{ transform:rotate(360deg); } }
+  .ai-loading-txt{font-size:13.5px; color:var(--text-muted);}
+  .ai-summary-text{font-size:14.5px; line-height:1.55; color:var(--text); cursor:pointer;}
+  .icebreaker-card{background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:15px;}
+  .icebreaker-head{display:flex; align-items:center; margin-bottom:13px;}
+  .icebreaker-head span{flex:1; font-weight:700; font-size:13.5px;}
+  .icebreaker-close{width:24px; height:24px; border-radius:50%; background:var(--surface); border:none; color:var(--text-dim); cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .icebreaker-close svg{width:12px; height:12px;}
+  .icebreaker-q{margin-bottom:14px;}
+  .icebreaker-q > p{font-size:13px; font-weight:600; margin:0 0 9px;}
+  .icebreaker-opt-row{display:flex; align-items:center; gap:9px; padding:5px 0; cursor:pointer;}
+  .icebreaker-opt-row .dot{width:17px; height:17px; border-radius:50%; border:2px solid var(--text-dim); flex-shrink:0; position:relative;}
+  .icebreaker-opt-row.selected .dot{border-color:var(--orange);}
+  .icebreaker-opt-row.selected .dot::after{content:""; position:absolute; inset:3px; border-radius:50%; background:var(--orange);}
+  .icebreaker-opt-row span{font-size:12.5px; color:var(--text-muted);}
+  .icebreaker-opt-row.selected span{color:var(--text);}
+  .icebreaker-foot{display:flex; align-items:center; gap:16px; margin-top:6px;}
+  .ib-send{background:var(--brand-gradient); color:#fff; border:none; font-family:inherit; font-weight:700; font-size:12.5px; padding:9px 20px; border-radius:100px; cursor:pointer;}
+  .ib-skip{background:none; border:none; color:var(--text-muted); font-family:inherit; font-weight:600; font-size:12.5px; cursor:pointer;}
+
+  .mural-new{
+    display:inline-flex; align-items:center; gap:4px; background:rgba(236,72,153,.16); color:var(--pink);
+    font-size:9.5px; font-weight:800; letter-spacing:.04em; padding:2px 7px; border-radius:100px; margin-left:6px;
+  }
+
+  .ptabs{display:flex; padding:20px 4px 0; border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none;}
+  .ptabs::-webkit-scrollbar{display:none;}
+  .ptab{
+    display:flex; flex-direction:column; align-items:center; gap:6px; padding:0 12px 10px; flex-shrink:0;
+    background:none; border:none; font-family:inherit; cursor:pointer; color:var(--text-muted);
+  }
+  .ptab svg{width:20px; height:20px;}
+  .ptab span{font-size:10px; font-weight:700; white-space:nowrap;}
+  .ptab .underline{width:40px; height:2px; border-radius:2px; background:transparent; margin-top:2px;}
+  .ptab.active{color:var(--text);}
+  .ptab.active svg{width:22px; height:22px;}
+  .ptab.active .underline{background:var(--orange);}
+
+  .pgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; padding-bottom:80px; position:relative;}
+  .pgrid-item{aspect-ratio:.72; background:var(--surface-2); position:relative; overflow:hidden;}
+  .pgrid-item img{width:100%; height:100%; object-fit:cover; display:block;}
+  .pgrid-badge{
+    position:absolute; left:6px; bottom:6px; display:flex; align-items:center; gap:3px;
+    background:rgba(0,0,0,.45); color:#fff; font-size:10px; font-weight:700; padding:3px 6px; border-radius:100px;
+  }
+  .pgrid-badge svg{width:11px; height:11px;}
+  .grid-fab{
+    position:absolute; right:16px; bottom:16px; width:42px; height:42px; border-radius:14px;
+    background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+    box-shadow:var(--card-shadow); color:var(--text);
+  }
+  .grid-fab svg{width:18px; height:18px;}
+
+  /* ---- Real bottom nav ---- */
+  .rbottomnav{
+    display:flex; align-items:center; background:var(--surface); border-top:1px solid var(--border);
+    padding:8px 4px calc(10px + env(safe-area-inset-bottom,0px)); flex-shrink:0; position:relative;
+  }
+  .rnavitem{flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--text-dim); cursor:pointer;}
+  .rnavitem svg{width:24px; height:24px;}
+  .rnavitem span{font-size:9.5px; font-weight:700;}
+  .rnavitem.active{color:var(--orange);}
+  .rnavitem.active svg{width:26px; height:26px;}
+  .rnav-fab-slot{flex:1; display:flex; justify-content:center;}
+  .rnav-fab{
+    width:55px; height:55px; border-radius:18px; background:var(--brand-gradient); display:flex; align-items:center;
+    justify-content:center; color:#fff; margin-top:-26px; box-shadow:0 8px 18px -6px rgba(236,72,153,.55);
+  }
+  .rnav-fab svg{width:24px; height:24px;}
+  .rnav-avatar{width:26px; height:26px; border-radius:9px; display:block;}
+  .rnavitem.active .rnav-avatar{outline:2px solid var(--orange); outline-offset:1px;}
+  .rnav-badge{
+    position:absolute; top:-2px; right:-6px; min-width:15px; height:15px; padding:0 3px; border-radius:8px;
+    background:var(--red); color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center;
+  }
+  .rnav-wrap{position:relative;}
+</style>
+
+<div class="intro">
+  <p class="eyebrow">iFollow &middot; Profile Experience</p>
+  <h1 class="title">Interactive <span class="grad">Appreciation&nbsp;Wall</span></h1>
+  <p class="sub">A clickable prototype of the mural, from profile teaser to full wall, composing a note, owner customization, and AI-assisted moderation.</p>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab active" data-target="profile">My Profile</button>
+  <button class="tab" data-target="viewer">Visiting a Profile</button>
+  <button class="tab" data-target="wall">Full Wall</button>
+  <button class="tab" data-target="compose">Leave a Note</button>
+  <button class="tab" data-target="customize">Customize</button>
+  <button class="tab" data-target="moderate">Moderate <span class="n" id="modCount">2</span></button>
+</div>
+
+<div class="switcher-row">
+  <span class="switcher-label">Platform</span>
+  <button class="switcher-btn active" data-platform="android">Android</button>
+  <button class="switcher-btn" data-platform="ios">iOS</button>
+</div>
+
+<div class="device" id="device" data-platform="android">
+  <div class="screen">
+
+    <!-- ===================== PROFILE (matches app ProfileScreen.kt) ===================== -->
+    <div class="view active" data-view="profile">
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="icons">
+          <svg class="i" viewBox="0 0 24 24"><path d="M2 8c6-5 14-5 20 0M5 12c4-3.5 10-3.5 14 0M8.5 16c2-1.5 5-1.5 7 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+          <svg class="i" viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2.5"/><path d="M22 10v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="ptopbar">
+        <span class="ptopbar-side"></span>
+        <span class="ptopbar-title">@juno.creates</span>
+        <span class="ptopbar-side right">
+          <button class="icon-btn" title="Share profile"><svg class="i" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.7"/><circle cx="6" cy="12" r="2.7"/><circle cx="18" cy="19" r="2.7"/><path d="M8.4 10.7l7.2-3.9M8.4 13.3l7.2 3.9"/></svg></button>
+          <button class="icon-btn"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4.6a7.7 7.7 0 0 0-1.7-1l-.4-2.5H9.1l-.4 2.5a7.7 7.7 0 0 0-1.7 1l-2.4-.6-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-.6c.5.4 1.1.75 1.7 1l.4 2.5h5.8l.4-2.5c.6-.25 1.2-.6 1.7-1l2.4.6 2-3.4z"/></svg></button>
+        </span>
+      </div>
+      <div class="view" style="display:flex; flex:1; overflow-y:auto;">
+        <div style="width:100%;">
+          <div class="phead">
+            <div class="phead-row">
+              <div class="avatar-col">
+                <img class="avatar-sq" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 90'%3E%3Crect width='90' height='90' rx='18' fill='%23F97316'/%3E%3Ctext x='45' y='58' font-family='Arial,sans-serif' font-size='32' font-weight='700' fill='white' text-anchor='middle'%3EJR%3C/text%3E%3C/svg%3E" alt="Juno Reyes">
+                <div class="streak-pill">
+                  <svg class="flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s5 5.5 5 10a5 5 0 0 1-10 0c0-1.4.6-2.6 1.3-3.6C9 10 10 10.7 10 12a2 2 0 0 0 4 0c0-2.4-2-4-2-7z"/></svg>
+                  <span>34-Day Streak</span>
+                  <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
+                </div>
+              </div>
+              <div class="pinfo">
+                <div class="pname-row">
+                  <h2 class="pname">Juno Reyes</h2>
+                  <svg class="pbadge" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8"><path d="M12 2l2.4 1.4 2.8-.2 1.2 2.5 2.5 1.2-.2 2.8L22 12l-1.4 2.4.2 2.8-2.5 1.2-1.2 2.5-2.8-.2L12 22l-2.4-1.4-2.8.2-1.2-2.5-2.5-1.2.2-2.8L2 12l1.4-2.4-.2-2.8 2.5-1.2 1.2-2.5 2.8.2z"/><path d="M9 12l2 2 4-4"/></svg>
+                  <span class="itrust-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 3v6c0 5-3 8.5-7 11-4-2.5-7-6-7-11V5z"/></svg>91</span>
+                </div>
+                <p class="pbio" id="bioText">Dance &amp; lifestyle creator. Coffee-fueled choreo drops every Friday. Based in Austin, always taking requests 💫</p>
+                <button class="pbio-more" id="bioToggle">Show more</button>
+              </div>
+            </div>
+
+            <div class="pstats-row">
+              <div class="pstat"><b>184</b><span>Posts</span></div>
+              <div class="pstat-div"></div>
+              <div class="pstat"><b>52.1k</b><span>Friends</span></div>
+              <div class="pstat-div"></div>
+              <div class="pstat"><b>96.4k</b><span>Likes</span></div>
+            </div>
+
+            <div class="mural-banner" data-open="wall" style="margin-top:18px;">
+              <div class="mural-top">
+                <div class="mural-icon-ring">
+                  <svg class="i" viewBox="0 0 24 24"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg>
+                </div>
+                <span class="mural-eyebrow">Appreciation Wall</span>
+                <span class="mural-new">NEW</span>
+              </div>
+              <h3 class="mural-title">See what people love about Juno</h3>
+              <p class="mural-desc"><span class="js-note-count">128</span> supportive notes from friends &amp; fans</p>
+              <div class="mural-stack">
+                <div class="stack-notes">
+                  <div class="mini-note" style="--r:-8deg; background:#FBEAF0;">💗</div>
+                  <div class="mini-note" style="--r:5deg; background:#FFF1DE;">✨</div>
+                  <div class="mini-note" style="--r:-3deg; background:#EFE6FB;">🌟</div>
+                </div>
+                <span class="mural-count">+125 more</span>
+                <span class="mural-cta">Open
+                  <svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M9 6l6 6-6 6"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ptabs">
+            <button class="ptab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/></svg><span>Snips</span><span class="underline"></span></button>
+            <button class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg><span>iDrops</span><span class="underline"></span></button>
+            <button class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 2l4 4-4 4M21 6H8a5 5 0 0 0-5 5M7 22l-4-4 4-4M3 18h13a5 5 0 0 0 5-5"/></svg><span>Reposts</span><span class="underline"></span></button>
+            <button class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>Drafts</span><span class="underline"></span></button>
+            <button class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg><span>Liked</span><span class="underline"></span></button>
+            <button class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M15.5 12v1.5a2.5 2.5 0 0 0 5 0V12a8.5 8.5 0 1 0-3.5 6.9"/></svg><span>Mentions</span><span class="underline"></span></button>
+          </div>
+
+          <div class="pgrid">
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>2.4k</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>891</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>5.1k</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>612</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>3.3k</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>1.8k</div></div>
+            <div class="grid-fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+          </div>
+        </div>
+      </div>
+      <div class="rbottomnav">
+        <div class="rnavitem"><svg class="i" viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg><span>Hub</span></div>
+        <div class="rnavitem"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M9 9v11"/></svg><span>Hallway</span></div>
+        <div class="rnav-fab-slot"><div class="rnav-fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg></div></div>
+        <div class="rnavitem rnav-wrap"><svg class="i" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg><span class="rnav-badge">3</span><span>iChat</span></div>
+        <div class="rnavitem active">
+          <img class="rnav-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect width='26' height='26' rx='9' fill='%23F97316'/%3E%3Ctext x='13' y='17.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3EJR%3C/text%3E%3C/svg%3E" alt="">
+          <span>MiSpace</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== VIEWER PROFILE (someone else visiting Juno's profile) ===================== -->
+    <div class="view" data-view="viewer">
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="icons">
+          <svg class="i" viewBox="0 0 24 24"><path d="M2 8c6-5 14-5 20 0M5 12c4-3.5 10-3.5 14 0M8.5 16c2-1.5 5-1.5 7 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+          <svg class="i" viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2.5"/><path d="M22 10v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="ptopbar">
+        <span class="ptopbar-side"><button class="icon-btn"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button></span>
+        <span class="ptopbar-title">@juno.creates</span>
+        <span class="ptopbar-side right">
+          <button class="icon-btn"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+        </span>
+      </div>
+      <div class="view" style="display:flex; flex:1; overflow-y:auto;">
+        <div style="width:100%;">
+          <div class="phead">
+            <div class="phead-row">
+              <div class="avatar-col">
+                <img class="avatar-sq" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 90'%3E%3Crect width='90' height='90' rx='18' fill='%23F97316'/%3E%3Ctext x='45' y='58' font-family='Arial,sans-serif' font-size='32' font-weight='700' fill='white' text-anchor='middle'%3EJR%3C/text%3E%3C/svg%3E" alt="Juno Reyes">
+                <div class="streak-pill">
+                  <svg class="flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s5 5.5 5 10a5 5 0 0 1-10 0c0-1.4.6-2.6 1.3-3.6C9 10 10 10.7 10 12a2 2 0 0 0 4 0c0-2.4-2-4-2-7z"/></svg>
+                  <span>34-Day Streak</span>
+                  <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
+                </div>
+              </div>
+              <div class="pinfo">
+                <div class="pname-row">
+                  <h2 class="pname">Juno Reyes</h2>
+                  <svg class="pbadge" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8"><path d="M12 2l2.4 1.4 2.8-.2 1.2 2.5 2.5 1.2-.2 2.8L22 12l-1.4 2.4.2 2.8-2.5 1.2-1.2 2.5-2.8-.2L12 22l-2.4-1.4-2.8.2-1.2-2.5-2.5-1.2.2-2.8L2 12l1.4-2.4-.2-2.8 2.5-1.2 1.2-2.5 2.8.2z"/><path d="M9 12l2 2 4-4"/></svg>
+                  <span class="itrust-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 3v6c0 5-3 8.5-7 11-4-2.5-7-6-7-11V5z"/></svg>91</span>
+                </div>
+                <p class="pbio">Dance &amp; lifestyle creator. Coffee-fueled choreo drops every Friday. Based in Austin, always taking requests 💫</p>
+              </div>
+            </div>
+
+            <div class="pstats-row">
+              <div class="pstat"><b>184</b><span>Posts</span></div>
+              <div class="pstat-div"></div>
+              <div class="pstat"><b>52.1k</b><span>Friends</span></div>
+              <div class="pstat-div"></div>
+              <div class="pstat"><b>96.4k</b><span>Likes</span></div>
+            </div>
+
+            <div class="pactions">
+              <button class="paction-btn" id="followBtn">Follow</button>
+              <button class="icon-sq-btn" title="Message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4z"/></svg></button>
+              <button class="icon-sq-btn" title="Share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="2.7"/><circle cx="6" cy="12" r="2.7"/><circle cx="18" cy="19" r="2.7"/><path d="M8.4 10.7l7.2-3.9M8.4 13.3l7.2 3.9"/></svg></button>
+            </div>
+
+            <button class="ai-entry" id="aiEntry">
+              <div class="ai-icon-wrap">
+                <div class="ai-icon-pulse"></div>
+                <div class="ai-icon-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6z"/></svg></div>
+              </div>
+              <div class="ai-entry-label">
+                <div class="ai-entry-title-row"><b>Get to know Juno</b><span class="ai-chip">AI</span></div>
+                <div class="ai-entry-sub">A short AI-generated summary</div>
+              </div>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+
+            <div class="mural-banner" data-open="wall" style="margin-top:16px;">
+              <div class="mural-top">
+                <div class="mural-icon-ring">
+                  <svg class="i" viewBox="0 0 24 24"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg>
+                </div>
+                <span class="mural-eyebrow">Appreciation Wall</span>
+              </div>
+              <h3 class="mural-title">Leave Juno a kind note</h3>
+              <p class="mural-desc">128 supportive notes from friends &amp; fans</p>
+              <div class="mural-stack">
+                <div class="stack-notes">
+                  <div class="mini-note" style="--r:-8deg; background:#FBEAF0;">💗</div>
+                  <div class="mini-note" style="--r:5deg; background:#FFF1DE;">✨</div>
+                  <div class="mini-note" style="--r:-3deg; background:#EFE6FB;">🌟</div>
+                </div>
+                <span class="mural-count">+125 more</span>
+                <span class="mural-cta">Open
+                  <svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M9 6l6 6-6 6"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ptabs">
+            <button class="ptab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/></svg><span>Snips</span><span class="underline"></span></button>
+            <button class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg><span>iDrops</span><span class="underline"></span></button>
+            <button class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 2l4 4-4 4M21 6H8a5 5 0 0 0-5 5M7 22l-4-4 4-4M3 18h13a5 5 0 0 0 5-5"/></svg><span>Reposts</span><span class="underline"></span></button>
+            <button class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg><span>Liked</span><span class="underline"></span></button>
+            <button class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M15.5 12v1.5a2.5 2.5 0 0 0 5 0V12a8.5 8.5 0 1 0-3.5 6.9"/></svg><span>Mentions</span><span class="underline"></span></button>
+          </div>
+
+          <div class="pgrid" style="padding-bottom:24px;">
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>2.4k</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>891</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>5.1k</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>612</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>3.3k</div></div>
+            <div class="pgrid-item"><div class="pgrid-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg>1.8k</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-scrim" id="aiScrim"></div>
+      <div class="ai-sheet" id="aiSheet">
+        <div class="ai-sheet-head"><b>Get to know Juno</b><span class="ai-badge">AI-generated</span></div>
+        <div class="tone-row">
+          <button class="tone-chip active" data-tone="fun">Fun</button>
+          <button class="tone-chip" data-tone="friendly">Friendly</button>
+          <button class="tone-chip" data-tone="professional">Professional</button>
+        </div>
+        <div class="ai-divider"></div>
+        <div class="ai-body" id="aiBody">
+          <div class="ai-loading-row" id="aiLoading">
+            <div class="ai-spinner"></div>
+            <span class="ai-loading-txt">Loading summary&hellip;</span>
+          </div>
+          <div class="icebreaker-card" id="aiIcebreaker" hidden>
+            <div class="icebreaker-head"><span>Quick Questions</span>
+              <button class="icebreaker-close" id="aiIcebreakerSkip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+            </div>
+            <div class="icebreaker-q">
+              <p>What's your favorite way to spend a Friday night?</p>
+              <div class="ib-options" data-q="fri">
+                <div class="icebreaker-opt-row" data-opt="dance"><div class="dot"></div><span>Dance practice</span></div>
+                <div class="icebreaker-opt-row" data-opt="movie"><div class="dot"></div><span>Movie marathon</span></div>
+                <div class="icebreaker-opt-row" data-opt="live"><div class="dot"></div><span>Going live with fans</span></div>
+              </div>
+            </div>
+            <div class="icebreaker-foot">
+              <button class="ib-send" id="aiIcebreakerSend">Send</button>
+              <button class="ib-skip" id="aiIcebreakerSkip2">Skip</button>
+            </div>
+          </div>
+          <p class="ai-summary-text" id="aiSummaryText" hidden></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== FULL WALL ===================== -->
+    <div class="view" data-view="wall">
+      <div class="statusbar"><span>9:41</span><span class="icons">
+        <svg class="i" viewBox="0 0 24 24"><path d="M2 8c6-5 14-5 20 0M5 12c4-3.5 10-3.5 14 0M8.5 16c2-1.5 5-1.5 7 0"/></svg>
+        <svg class="i" viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2.5"/></svg>
+      </span></div>
+      <div style="flex:1; min-height:0; position:relative; display:flex; flex-direction:column;">
+        <div class="wall-bg" id="wallBg"></div>
+        <div class="wall-header">
+          <div class="icon-btn" data-open="profile"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+          <div>
+            <h2>Juno's Appreciation Wall</h2>
+            <span class="wh-sub">128 notes &middot; arranged by AI</span>
+          </div>
+          <div class="icon-btn" data-open="customize"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4.6a7.7 7.7 0 0 0-1.7-1l-.4-2.5H9.1l-.4 2.5a7.7 7.7 0 0 0-1.7 1l-2.4-.6-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-.6c.5.4 1.1.75 1.7 1l.4 2.5h5.8l.4-2.5c.6-.25 1.2-.6 1.7-1l2.4.6 2-3.4z"/></svg></div>
+        </div>
+        <div class="chip-row" style="padding:0 14px 10px;">
+          <div class="chip active" data-filter="all">All 128</div>
+          <div class="chip" data-filter="pinned">Pinned 6</div>
+        </div>
+        <div class="wall-scroll">
+          <div class="masonry" id="masonry">
+            <div class="note pinned" data-tag="pinned">
+              <div class="pin-ribbon"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z" stroke-width="1"/></svg></div>
+              <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%23EC4899'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3EMC%3C/text%3E%3C/svg%3E" alt="@marcocodes"><span class="note-user">@marcocodes <span>&middot; 2d</span></span></div>
+              <p class="note-msg">You always show up for people, even on your hardest days. That's rare. Never change 💛</p>
+              <div class="note-foot"><button class="like-btn liked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 41</button><button class="pin-btn active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+            </div>
+            <div class="note" data-tag="all">
+              <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%239333EA'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3ELK%3C/text%3E%3C/svg%3E" alt="@lilah.k"><span class="note-user">@lilah.k <span>&middot; 5h</span></span></div>
+              <p class="note-msg">Your live tonight literally turned my whole week around. Thank you for existing ✨</p>
+              <div class="note-foot"><button class="like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 12</button><button class="pin-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+            </div>
+            <div class="note pinned" data-tag="pinned">
+              <div class="pin-ribbon"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z" stroke-width="1"/></svg></div>
+              <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%231D9BF0'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3EDP%3C/text%3E%3C/svg%3E" alt="@dev_priya"><span class="note-user">@dev_priya <span>&middot; 1w</span></span></div>
+              <p class="note-msg">Watching you go from 0 to booked-out in a year has been so inspiring. Proud of you!</p>
+              <div class="note-foot"><button class="like-btn liked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 67</button><button class="pin-btn active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+            </div>
+            <div class="note" data-tag="all">
+              <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%23F59E0B'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3ERM%3C/text%3E%3C/svg%3E" alt="@ren.moves"><span class="note-user">@ren.moves <span>&middot; 3d</span></span></div>
+              <p class="note-msg">okay but the choreo tutorial saved my recital 😭 you're a lifesaver</p>
+              <div class="note-foot"><button class="like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 8</button><button class="pin-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+            </div>
+            <div class="note" data-tag="all">
+              <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%2310B981'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3ETN%3C/text%3E%3C/svg%3E" alt="@theo.nyc"><span class="note-user">@theo.nyc <span>&middot; 6h</span></span></div>
+              <p class="note-msg">You give the realest advice in DMs. Genuinely one of the good ones on here.</p>
+              <div class="note-foot"><button class="like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 23</button><button class="pin-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+            </div>
+            <div class="note" data-tag="all">
+              <div class="note-head"><img class="note-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='12' fill='%23F97316'/%3E%3Ctext x='12' y='16.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3ESB%3C/text%3E%3C/svg%3E" alt="@sadie.b"><span class="note-user">@sadie.b <span>&middot; 2w</span></span></div>
+              <p class="note-msg">Happy 2 years on iFollow! Watching your growth has been such a joy 🎉</p>
+              <div class="note-foot"><button class="like-btn liked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.35-9.5-8.8C.8 8.4 2.6 5 6 5c2 0 3.4 1.1 4 2.2C10.6 6.1 12 5 14 5c3.4 0 5.2 3.4 3.5 7.2C19 16.65 12 21 12 21z"/></svg> 19</button><button class="pin-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg></button></div>
+            </div>
+          </div>
+        </div>
+        <button class="fab" data-open="compose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+          Leave a note
+        </button>
+      </div>
+    </div>
+
+    <!-- ===================== COMPOSE ===================== -->
+    <div class="view" data-view="compose">
+      <div class="statusbar"><span>9:41</span><span class="icons">
+        <svg class="i" viewBox="0 0 24 24"><path d="M2 8c6-5 14-5 20 0M5 12c4-3.5 10-3.5 14 0M8.5 16c2-1.5 5-1.5 7 0"/></svg>
+        <svg class="i" viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2.5"/></svg>
+      </span></div>
+      <div class="compose-head">
+        <div class="icon-btn" data-open="wall"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+        <h2>Leave a note</h2>
+      </div>
+      <div class="compose-scroll">
+        <div class="compose-to">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 38 38'%3E%3Crect width='38' height='38' rx='19' fill='%23F97316'/%3E%3Ctext x='19' y='25' font-family='Arial,sans-serif' font-size='14' font-weight='700' fill='white' text-anchor='middle'%3EJR%3C/text%3E%3C/svg%3E" alt="Juno Reyes">
+          <div>
+            <div class="compose-to-name">To Juno Reyes</div>
+            <div class="compose-to-sub">@juno.creates &middot; Appreciation Wall</div>
+          </div>
+          <span class="compose-to-badge">as @you</span>
+        </div>
+
+        <div class="prompt-row">
+          <button class="prompt-chip" data-fill="Their content inspired me to try something new 💫">Their content inspired me 💫</button>
+          <button class="prompt-chip" data-fill="They helped me through something hard 🤍 thank you">They helped me through it 🤍</button>
+          <button class="prompt-chip" data-fill="Just wanted to say thanks for always showing up 🙏">Just wanted to say thanks 🙏</button>
+          <button class="prompt-chip" data-fill="Proud of how far they've come this year 🌱">Proud of their growth 🌱</button>
+        </div>
+
+        <div class="compose-area">
+          <div class="compose-top-row">
+            <div class="compose-as">
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect width='22' height='22' rx='11' fill='%231D9BF0'/%3E%3Ctext x='11' y='15' font-family='Arial,sans-serif' font-size='9' font-weight='700' fill='white' text-anchor='middle'%3EYOU%3C/text%3E%3C/svg%3E" alt="">
+              <span>Posting as @you</span>
+            </div>
+            <div class="color-picker" id="colorPicker">
+              <button class="color-dot selected" style="background:var(--pink)" data-accent="var(--pink)" title="Pink"></button>
+              <button class="color-dot" style="background:var(--amber)" data-accent="var(--amber)" title="Amber"></button>
+              <button class="color-dot" style="background:var(--purple)" data-accent="var(--purple)" title="Purple"></button>
+              <button class="color-dot" style="background:var(--blue)" data-accent="var(--blue)" title="Blue"></button>
+            </div>
+          </div>
+          <textarea class="compose-input" id="composeInput" placeholder="Write something kind and specific &hellip;"></textarea>
+          <div class="block-banner" id="blockBanner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4M12 17h.01M10.3 3.86L1.8 18a1.5 1.5 0 0 0 1.3 2.25h17.8a1.5 1.5 0 0 0 1.3-2.25L13.7 3.86a1.5 1.5 0 0 0-2.6 0z"/></svg>
+            <span>This note reads as harmful, not encouraging. Try rephrasing it &mdash; the wall is a positive space.</span>
+          </div>
+          <div class="compose-card-foot">
+            <div class="ai-status ok" id="aiStatus">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.2 6.6H21l-5.4 4 2 6.6L12 15.8 6.4 19.2l2-6.6L3 8.6h6.8z"/></svg>
+              <span id="aiStatusTxt">Looks kind and clear</span>
+            </div>
+            <span class="char-count" id="charCount">0 / 240</span>
+          </div>
+        </div>
+      </div>
+      <div class="compose-foot">
+        <button class="demo-link" id="demoFlagBtn">Demo: try a flagged message</button>
+        <button class="send-btn" id="sendBtn" disabled>
+          Post to wall
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===================== CUSTOMIZE ===================== -->
+    <div class="view" data-view="customize">
+      <div class="statusbar"><span>9:41</span><span class="icons">
+        <svg class="i" viewBox="0 0 24 24"><path d="M2 8c6-5 14-5 20 0M5 12c4-3.5 10-3.5 14 0M8.5 16c2-1.5 5-1.5 7 0"/></svg>
+        <svg class="i" viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2.5"/></svg>
+      </span></div>
+      <div class="view" style="display:flex; flex:1; overflow-y:auto;">
+        <div class="cz-scroll" style="width:100%;">
+          <div class="cz-title">
+            <div class="icon-btn" data-open="wall"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+            <h2>Customize your wall</h2>
+          </div>
+
+          <div class="cz-block">
+            <h3>Background theme</h3>
+            <div class="swatches">
+              <div class="swatch sw-classic selected" data-theme=""></div>
+              <div class="swatch sw-sunset" data-theme="theme-sunset"></div>
+              <div class="swatch sw-ocean" data-theme="theme-ocean"></div>
+              <div class="swatch sw-midnight" data-theme="theme-midnight"></div>
+              <div class="upload-tile"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.6" fill="currentColor" stroke="none"/><path d="M21 16l-5.5-5.5L9 17"/></svg></div>
+            </div>
+          </div>
+
+          <div class="cz-block">
+            <h3>Mural animation</h3>
+            <div class="anim-row">
+              <div class="anim-chip active">Gentle drift</div>
+              <div class="anim-chip">Sparkle</div>
+              <div class="anim-chip">None</div>
+            </div>
+          </div>
+
+          <div class="cz-block">
+            <h3>Arrangement</h3>
+            <div class="row-toggle">
+              <div><div class="rt-txt">AI auto-arrange</div><div class="rt-desc">Sizes &amp; layout refresh as new notes arrive</div></div>
+              <div class="switch on"></div>
+            </div>
+          </div>
+
+          <div class="cz-block">
+            <h3>Moderation</h3>
+            <div class="row-toggle">
+              <div><div class="rt-txt">Approve before posting</div><div class="rt-desc">Review each note before it appears on your wall</div></div>
+              <div class="switch on" id="modToggle"></div>
+            </div>
+            <div class="row-toggle">
+              <div><div class="rt-txt">AI toxicity filter</div><div class="rt-desc">Auto-block harmful notes, always on</div></div>
+              <div class="switch on" style="opacity:.6; pointer-events:none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== MODERATION ===================== -->
+    <div class="view" data-view="moderate">
+      <div class="statusbar"><span>9:41</span><span class="icons">
+        <svg class="i" viewBox="0 0 24 24"><path d="M2 8c6-5 14-5 20 0M5 12c4-3.5 10-3.5 14 0M8.5 16c2-1.5 5-1.5 7 0"/></svg>
+        <svg class="i" viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2.5"/></svg>
+      </span></div>
+      <div class="view" style="display:flex; flex:1; overflow-y:auto;">
+        <div class="mod-scroll" style="width:100%;">
+          <div class="mod-head">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div class="icon-btn" data-open="wall"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+              <h2 style="margin:0;">Review notes</h2>
+            </div>
+            <p>2 pending &middot; 1 flagged by AI for tone</p>
+          </div>
+
+          <div class="mod-card flagged" id="modCard1">
+            <div class="mod-top"><img class="mod-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect width='26' height='26' rx='13' fill='%2355556A'/%3E%3Ctext x='13' y='17.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3EGA%3C/text%3E%3C/svg%3E" alt="@grumpy_anon"><span class="mod-user">@grumpy_anon</span><span class="mod-time">4m ago</span></div>
+            <div class="flag-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86L1.8 18a1.5 1.5 0 0 0 1.3 2.25h17.8a1.5 1.5 0 0 0 1.3-2.25L13.7 3.86a1.5 1.5 0 0 0-2.6 0z"/></svg>AI flagged: harsh tone</div>
+            <p class="mod-msg">Kind of overrated honestly, don't see what the hype is about.</p>
+            <div class="mod-actions">
+              <button class="act-btn act-approve" data-action="approve" data-target="modCard1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12l5 5 11-11"/></svg>Approve anyway</button>
+              <button class="act-btn act-reject" data-action="reject" data-target="modCard1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>Reject</button>
+            </div>
+          </div>
+
+          <div class="mod-card" id="modCard2">
+            <div class="mod-top"><img class="mod-av" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect width='26' height='26' rx='13' fill='%23EC4899'/%3E%3Ctext x='13' y='17.5' font-family='Arial,sans-serif' font-size='10' font-weight='700' fill='white' text-anchor='middle'%3EWC%3C/text%3E%3C/svg%3E" alt="@wren.codes"><span class="mod-user">@wren.codes</span><span class="mod-time">19m ago</span></div>
+            <p class="mod-msg">Your consistency this year has been so motivating to watch. Keep going!!</p>
+            <div class="mod-actions">
+              <button class="act-btn act-approve" data-action="approve" data-target="modCard2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12l5 5 11-11"/></svg>Approve</button>
+              <button class="act-btn act-reject" data-action="reject" data-target="modCard2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>Reject</button>
+            </div>
+          </div>
+
+          <div class="mod-empty" id="modEmpty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12l5 5 11-11"/></svg>
+            <div>All caught up &mdash; no notes waiting for review.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p class="hint">Tap the mural banner to open the wall, tap a note to pin/like it, and use the tab strip above to jump between screens. This is a click-through prototype for review &mdash; not the final implementation.</p>
+
+<script>
+(function(){
+  function activate(name){
+    document.querySelectorAll('.view[data-view]').forEach(function(v){
+      v.classList.toggle('active', v.dataset.view === name);
+    });
+    document.querySelectorAll('.tab').forEach(function(t){
+      t.classList.toggle('active', t.dataset.target === name);
+    });
+  }
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){ activate(t.dataset.target); });
+  });
+  document.querySelectorAll('[data-open]').forEach(function(el){
+    el.addEventListener('click', function(){ activate(el.dataset.open); });
+  });
+
+  // Platform switcher
+  var device = document.getElementById('device');
+  document.querySelectorAll('.switcher-btn[data-platform]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.switcher-btn[data-platform]').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      device.dataset.platform = btn.dataset.platform;
+    });
+  });
+
+  // AI Profile Summary sheet
+  var aiEntry = document.getElementById('aiEntry');
+  var aiScrim = document.getElementById('aiScrim');
+  var aiSheet = document.getElementById('aiSheet');
+  var aiLoading = document.getElementById('aiLoading');
+  var aiIcebreaker = document.getElementById('aiIcebreaker');
+  var aiSummaryText = document.getElementById('aiSummaryText');
+  var toneChips = document.querySelectorAll('.tone-chip');
+  var summaries = {
+    fun: "Juno turns Friday choreo drops into a whole community ritual — equal parts hype coach and best friend, always down to teach the move one more time.",
+    friendly: "Juno is warm, encouraging, and genuinely invested in the people who show up — the kind of creator who remembers your name in the comments.",
+    professional: "Juno Reyes is an Austin-based dance and lifestyle creator known for weekly choreography releases and consistently high audience engagement."
+  };
+  var icebreakerShown = false;
+  var selectedTone = 'fun';
+
+  function openAiSheet(){
+    aiScrim.classList.add('show');
+    aiSheet.classList.add('show');
+    runAiPhase(true);
+  }
+  function closeAiSheet(){
+    aiScrim.classList.remove('show');
+    aiSheet.classList.remove('show');
+  }
+  function runAiPhase(showIcebreakerFirst){
+    aiLoading.hidden = false;
+    aiIcebreaker.hidden = true;
+    aiSummaryText.hidden = true;
+    setTimeout(function(){
+      aiLoading.hidden = true;
+      if (showIcebreakerFirst && !icebreakerShown) {
+        aiIcebreaker.hidden = false;
+      } else {
+        aiSummaryText.hidden = false;
+        aiSummaryText.textContent = summaries[selectedTone];
+      }
+    }, 900);
+  }
+  aiEntry.addEventListener('click', openAiSheet);
+  aiScrim.addEventListener('click', closeAiSheet);
+  document.getElementById('aiIcebreakerSkip').addEventListener('click', function(){ icebreakerShown = true; runAiPhase(false); });
+  document.getElementById('aiIcebreakerSkip2').addEventListener('click', function(){ icebreakerShown = true; runAiPhase(false); });
+  document.getElementById('aiIcebreakerSend').addEventListener('click', function(){ icebreakerShown = true; runAiPhase(false); });
+  document.querySelectorAll('.icebreaker-opt-row').forEach(function(row){
+    row.addEventListener('click', function(){
+      row.parentElement.querySelectorAll('.icebreaker-opt-row').forEach(function(r){ r.classList.remove('selected'); });
+      row.classList.add('selected');
+    });
+  });
+  toneChips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      toneChips.forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      selectedTone = chip.dataset.tone;
+      runAiPhase(false);
+    });
+  });
+
+  var followBtn = document.getElementById('followBtn');
+  followBtn.addEventListener('click', function(){
+    var following = followBtn.classList.toggle('secondary');
+    followBtn.textContent = following ? 'Following' : 'Follow';
+  });
+
+  var bioText = document.getElementById('bioText');
+  var bioToggle = document.getElementById('bioToggle');
+  bioToggle.addEventListener('click', function(){
+    var expanded = bioText.style.webkitLineClamp === 'unset';
+    bioText.style.webkitLineClamp = expanded ? '3' : 'unset';
+    bioToggle.textContent = expanded ? 'Show more' : 'Show less';
+  });
+
+  // Like / pin toggles on wall notes, with a small reward burst
+  function spawnBurst(btn, color){
+    for (var i = 0; i < 6; i++){
+      var p = document.createElement('span');
+      p.className = 'burst';
+      p.style.background = color;
+      p.style.setProperty('--a', (i * 60) + 'deg');
+      btn.appendChild(p);
+      (function(el){ setTimeout(function(){ el.remove(); }, 600); })(p);
+    }
+  }
+  function wireNoteButtons(scope){
+    scope.querySelectorAll('.like-btn').forEach(function(btn){
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = '1';
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var liked = btn.classList.toggle('liked');
+        var n = parseInt(btn.textContent.trim(), 10) || 0;
+        btn.innerHTML = btn.querySelector('svg').outerHTML + ' ' + (liked ? n + 1 : n - 1);
+        if (liked) spawnBurst(btn, 'var(--pink)');
+      });
+    });
+    scope.querySelectorAll('.pin-btn').forEach(function(btn){
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = '1';
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var active = btn.classList.toggle('active');
+        btn.closest('.note').classList.toggle('pinned', active);
+        if (active) spawnBurst(btn, 'var(--amber)');
+      });
+    });
+  }
+  wireNoteButtons(document);
+
+  // Wall filter chips
+  document.querySelectorAll('.chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      var f = chip.dataset.filter;
+      document.querySelectorAll('#masonry .note').forEach(function(n){
+        n.style.display = (f === 'all' || n.classList.contains('pinned')) ? '' : 'none';
+      });
+    });
+  });
+
+  // Customize: theme swatches drive wall background
+  document.querySelectorAll('.swatch[data-theme]').forEach(function(sw){
+    sw.addEventListener('click', function(){
+      document.querySelectorAll('.swatch').forEach(function(s){ s.classList.remove('selected'); });
+      sw.classList.add('selected');
+      var wallBg = document.getElementById('wallBg');
+      wallBg.className = 'wall-bg ' + sw.dataset.theme;
+    });
+  });
+  document.querySelectorAll('.anim-chip').forEach(function(c){
+    c.addEventListener('click', function(){
+      document.querySelectorAll('.anim-chip').forEach(function(x){ x.classList.remove('active'); });
+      c.classList.add('active');
+    });
+  });
+  document.querySelectorAll('.switch').forEach(function(s){
+    s.addEventListener('click', function(){ s.classList.toggle('on'); });
+  });
+
+  // Compose: recipient card, starter prompts, note color, live AI moderation demo
+  var input = document.getElementById('composeInput');
+  var status = document.getElementById('aiStatus');
+  var statusTxt = document.getElementById('aiStatusTxt');
+  var charCount = document.getElementById('charCount');
+  var sendBtn = document.getElementById('sendBtn');
+  var sendBtnDefault = sendBtn.innerHTML;
+  var blockBanner = document.getElementById('blockBanner');
+  var toxicWords = ['overrated', 'hate', 'stupid', 'ugly', 'worst'];
+
+  function evalCompose(){
+    var val = input.value;
+    charCount.textContent = val.length + ' / 240';
+    var lower = val.toLowerCase();
+    var isToxic = toxicWords.some(function(w){ return lower.indexOf(w) !== -1; });
+    if (val.trim().length === 0) {
+      status.className = 'ai-status';
+      statusTxt.textContent = 'Write something to get started';
+      sendBtn.disabled = true;
+      blockBanner.classList.remove('show');
+    } else if (isToxic) {
+      status.className = 'ai-status block';
+      statusTxt.textContent = 'May read as unkind';
+      sendBtn.disabled = true;
+      blockBanner.classList.add('show');
+    } else {
+      status.className = 'ai-status ok';
+      statusTxt.textContent = 'Looks kind and clear';
+      sendBtn.disabled = false;
+      blockBanner.classList.remove('show');
+    }
+  }
+  input.addEventListener('input', evalCompose);
+  document.getElementById('demoFlagBtn').addEventListener('click', function(){
+    input.value = "Honestly kind of overrated, don't get the hype.";
+    evalCompose();
+  });
+  document.querySelectorAll('.prompt-chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      input.value = chip.dataset.fill;
+      evalCompose();
+      input.focus();
+    });
+  });
+  var composeArea = document.querySelector('.compose-area');
+  document.querySelectorAll('.color-dot').forEach(function(dot){
+    dot.addEventListener('click', function(){
+      document.querySelectorAll('.color-dot').forEach(function(d){ d.classList.remove('selected'); });
+      dot.classList.add('selected');
+      composeArea.style.setProperty('--note-accent', dot.dataset.accent);
+    });
+  });
+  sendBtn.addEventListener('click', function(){
+    if (sendBtn.disabled) return;
+    sendBtn.textContent = 'Posted ✓';
+    setTimeout(function(){
+      sendBtn.innerHTML = sendBtnDefault;
+      input.value = '';
+      evalCompose();
+      activate('wall');
+    }, 700);
+  });
+
+  // Moderation approve/reject
+  var modCount = document.getElementById('modCount');
+  var modEmpty = document.getElementById('modEmpty');
+  function updateModCount(){
+    var remaining = document.querySelectorAll('.mod-card').length;
+    modCount.textContent = remaining;
+    if (remaining === 0) modEmpty.style.display = 'block';
+  }
+  document.querySelectorAll('.act-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var card = document.getElementById(btn.dataset.target);
+      card.style.opacity = '0';
+      card.style.transform = 'translateX(' + (btn.dataset.action === 'approve' ? '40px' : '-40px') + ')';
+      setTimeout(function(){
+        card.remove();
+        updateModCount();
+      }, 220);
+    });
+  });
+})();
+</script>
